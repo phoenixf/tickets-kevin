@@ -205,9 +205,15 @@ Acesse: http://localhost:8080
 
 ## 📖 Documentação
 
-- **[PLANEJAMENTO.md](PLANEJAMENTO.md)** - Planejamento completo do sistema, arquitetura, roadmap
-- **[BANCO_DE_DADOS.md](BANCO_DE_DADOS.md)** - Documentação detalhada do banco, queries úteis
-- **[tickets.md](tickets.md)** - Requisitos originais do sistema
+### 📚 Guias Principais
+- **[CHANGELOG.md](CHANGELOG.md)** - Histórico de mudanças e versionamento
+- **[CLAUDE.md](CLAUDE.md)** - Guia para desenvolvimento com Claude Code
+
+### 📁 Documentação Técnica (`docs/`)
+- **[PLANEJAMENTO.md](docs/PLANEJAMENTO.md)** - Planejamento completo do sistema, arquitetura, roadmap
+- **[BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)** - Documentação detalhada do banco, queries úteis, diagramas ER
+- **[TESTING.md](docs/TESTING.md)** - Guia completo de testes (unitários, integração, banco de dados)
+- **[tickets.md](docs/tickets.md)** - Requisitos originais do sistema
 
 ---
 
