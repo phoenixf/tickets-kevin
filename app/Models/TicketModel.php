@@ -70,7 +70,7 @@ class TicketModel extends Model
             ]
         ],
         'status' => [
-            'rules' => 'required|in_list[novo,em_andamento,aguardando,resolvido,fechado]',
+            'rules' => 'required|in_list[novo,aberto,em_progresso,pendente,resolvido,fechado]',
             'errors' => [
                 'required' => 'O status é obrigatório',
                 'in_list' => 'Status inválido'

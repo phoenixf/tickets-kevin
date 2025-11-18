@@ -35,6 +35,9 @@ Sistema moderno de gestão de tickets (help desk) em PHP com CodeIgniter 4, foca
 - **Database**: `tickets_db`
 - **Usuário**: `tickets_user`
 - **Senha**: `tickets_pass_2024`
+- **Host (DEV)**: `127.0.0.1` (⚠️ usar IP, não localhost)
+- **Porta (DEV)**: `3310` (⚠️ NÃO é 3306!)
+  - **Nota**: Em produção a porta padrão é 3306
 - **7 tabelas criadas** em PT-BR:
   1. `usuarios` - Admin, agentes, clientes
   2. `categorias` - 6 categorias cadastradas
@@ -545,24 +548,24 @@ composer require vendor/package
 ```
 /var/www/tickets-kevin/
 ├── app/
-│   ├── Controllers/         # CRIAR: Tickets, Dashboard, Users
-│   ├── Models/              # CRIAR: TicketModel, UserModel, etc.
+│   ├── Controllers/         # ✅ Tickets, Dashboard criados
+│   ├── Models/              # ✅ Todos os models criados
 │   ├── Views/
-│   │   ├── layouts/         # CRIAR: main.php, auth.php
-│   │   ├── tickets/         # CRIAR: index, create, edit, show
-│   │   └── dashboard/       # CRIAR: index.php
+│   │   ├── layouts/         # ✅ main.php com dark mode
+│   │   ├── tickets/         # ✅ CRUD completo
+│   │   └── dashboard/       # ✅ Dashboard criado
 │   ├── Database/
 │   │   ├── Migrations/      # ✅ 7 migrations criadas
-│   │   └── Seeds/           # ✅ 3 seeders criados
+│   │   └── Seeds/           # ✅ TicketsCompletosSeeder (35 tickets, 3 agentes)
 │   ├── Config/
-│   │   ├── Routes.php       # CONFIGURAR rotas
-│   │   └── Filters.php      # CONFIGURAR auth filter
-│   └── Filters/             # CRIAR: AuthFilter
+│   │   ├── Routes.php       # ✅ Configurado
+│   │   └── Filters.php      # ✅ Configurado
+│   ├── Helpers/             # ✅ ticket_helper.php
+│   └── Filters/             # ✅ AuthFilter
 ├── public/
-│   ├── css/                 # CRIAR: custom.css
-│   ├── js/                  # CRIAR: app.js
-│   └── uploads/             # Para anexos
-├── docs/                    # ✅ Documentação organizada
+│   ├── uploads/             # Para anexos
+│   └── index.php
+├── docs/                    # ⚠️ Padrão para documentação
 │   ├── PLANEJAMENTO.md
 │   ├── BANCO_DE_DADOS.md
 │   └── tickets.md
@@ -571,11 +574,78 @@ composer require vendor/package
 │   ├── unit/
 │   └── feature/
 ├── .env                     # ✅ Configurado
-├── CHANGELOG.md             # ✅ Criado
+├── CHANGELOG.md             # ✅ Atualizado
 ├── CLAUDE.md                # ✅ Este arquivo
-├── README.md                # ✅ Atualizado
-└── TESTING.md               # CRIAR: Guia de testes
+├── README.md                # ✅ Principal
+└── VERSION                  # ✅ Controle de versão
 ```
+
+### 📋 Padrão de Documentação
+
+**IMPORTANTE**: Toda documentação do projeto deve ficar em `/docs/`
+
+- `docs/` - Pasta padrão para TODA documentação técnica
+  - `docs/setup/` - Guias de instalação e setup
+  - `docs/development/` - Guias de desenvolvimento
+  - `docs/testing/` - Documentação de testes
+  - `docs/api/` - Documentação de API
+
+**Raiz do projeto** - Apenas arquivos essenciais:
+- `README.md` - Documentação principal
+- `CHANGELOG.md` - Histórico de mudanças
+- `CLAUDE.md` - Guia para Claude Code (este arquivo)
+
+---
+
+## ⚡ Uso de Subagentes (SEMPRE!)
+
+**REGRA CRÍTICA**: SEMPRE usar subagentes (Task tool) para economizar contexto e acelerar o trabalho!
+
+### Quando Usar Subagentes
+
+**Use SEMPRE que possível, especialmente para:**
+
+1. **Tarefas Paralel izáveis** - Rode múltiplas tarefas simultaneamente
+   ```
+   - Adicionar dark mode em 3 arquivos diferentes
+   - Criar vários models ao mesmo tempo
+   - Atualizar múltiplas views
+   ```
+
+2. **Buscar e Explorar Código** - Use model Haiku (rápido e barato)
+   ```
+   - Encontrar onde algo está implementado
+   - Explorar estrutura de pastas
+   - Grep por padrões
+   ```
+
+3. **Implementações Isoladas** - Use model apropriado
+   ```
+   - Haiku: Tasks simples e rápidas
+   - Sonnet: Implementações médias e refatorações
+   - Opus: Apenas para tasks muito complexas
+   ```
+
+### Como Usar Subagentes
+
+**Exemplo - Tarefas Paralelas:**
+```
+Task 1 (Haiku): Adicionar dark mode no dashboard
+Task 2 (Haiku): Adicionar dark mode nas views de tickets
+Task 3 (Sonnet): Criar seeder com 20 tickets variados
+
+Roda tudo em PARALELO em uma única chamada!
+```
+
+**Benefícios:**
+- ✅ Economiza MUITO contexto
+- ✅ Acelera o trabalho (paralelo)
+- ✅ Reduz custo (Haiku é barato)
+- ✅ Permite fazer mais em uma sessão
+
+### Princípio
+
+**"Se pode ser paralelizado, DEVE ser paralelizado com subagentes"**
 
 ---
 

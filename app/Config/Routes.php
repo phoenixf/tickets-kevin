@@ -17,6 +17,9 @@ $routes->get('/', static function() {
 // Rotas de autenticação (login, register, logout, etc.)
 service('auth')->routes($routes);
 
+// Adicionar rota POST para logout (Shield só cria GET por padrão)
+$routes->post('logout', '\CodeIgniter\Shield\Controllers\LoginController::logoutAction');
+
 // Rotas protegidas (requerem autenticação)
 $routes->group('', ['filter' => 'session'], static function ($routes) {
     // Dashboard

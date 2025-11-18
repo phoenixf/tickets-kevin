@@ -43,37 +43,37 @@ class Dashboard extends BaseController
 
         if ($user->funcao === 'cliente') {
             // Estatísticas dos tickets do cliente
-            $stats['total'] = $this->ticketModel->where('usuario_id', $user->id)->countAllResults(false);
-            $stats['novos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'novo')->countAllResults(false);
-            $stats['abertos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'aberto')->countAllResults(false);
-            $stats['em_progresso'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'em_progresso')->countAllResults(false);
-            $stats['pendentes'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'pendente')->countAllResults(false);
-            $stats['resolvidos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'resolvido')->countAllResults(false);
-            $stats['fechados'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'fechado')->countAllResults(false);
+            $stats['total'] = $this->ticketModel->where('usuario_id', $user->id)->countAllResults();
+            $stats['novos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'novo')->countAllResults();
+            $stats['abertos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'aberto')->countAllResults();
+            $stats['em_progresso'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'em_progresso')->countAllResults();
+            $stats['pendentes'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'pendente')->countAllResults();
+            $stats['resolvidos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'resolvido')->countAllResults();
+            $stats['fechados'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'fechado')->countAllResults();
 
             // Tickets recentes do cliente
             $ticketsRecentes = $this->ticketModel->ticketsDoUsuario($user->id, 5);
         } elseif ($user->funcao === 'agente') {
             // Estatísticas de todos os tickets (agentes veem tudo)
-            $stats['total'] = $this->ticketModel->countAll(false);
-            $stats['novos'] = $this->ticketModel->where('status', 'novo')->countAllResults(false);
-            $stats['abertos'] = $this->ticketModel->where('status', 'aberto')->countAllResults(false);
-            $stats['em_progresso'] = $this->ticketModel->where('status', 'em_progresso')->countAllResults(false);
-            $stats['pendentes'] = $this->ticketModel->where('status', 'pendente')->countAllResults(false);
-            $stats['resolvidos'] = $this->ticketModel->where('status', 'resolvido')->countAllResults(false);
-            $stats['fechados'] = $this->ticketModel->where('status', 'fechado')->countAllResults(false);
+            $stats['total'] = $this->ticketModel->countAll();
+            $stats['novos'] = $this->ticketModel->where('status', 'novo')->countAllResults();
+            $stats['abertos'] = $this->ticketModel->where('status', 'aberto')->countAllResults();
+            $stats['em_progresso'] = $this->ticketModel->where('status', 'em_progresso')->countAllResults();
+            $stats['pendentes'] = $this->ticketModel->where('status', 'pendente')->countAllResults();
+            $stats['resolvidos'] = $this->ticketModel->where('status', 'resolvido')->countAllResults();
+            $stats['fechados'] = $this->ticketModel->where('status', 'fechado')->countAllResults();
 
             // Tickets atribuídos ao agente
             $ticketsRecentes = $this->ticketModel->ticketsDoResponsavel($user->id, 5);
         } else {
             // Admin - estatísticas completas
-            $stats['total'] = $this->ticketModel->countAll(false);
-            $stats['novos'] = $this->ticketModel->where('status', 'novo')->countAllResults(false);
-            $stats['abertos'] = $this->ticketModel->where('status', 'aberto')->countAllResults(false);
-            $stats['em_progresso'] = $this->ticketModel->where('status', 'em_progresso')->countAllResults(false);
-            $stats['pendentes'] = $this->ticketModel->where('status', 'pendente')->countAllResults(false);
-            $stats['resolvidos'] = $this->ticketModel->where('status', 'resolvido')->countAllResults(false);
-            $stats['fechados'] = $this->ticketModel->where('status', 'fechado')->countAllResults(false);
+            $stats['total'] = $this->ticketModel->countAll();
+            $stats['novos'] = $this->ticketModel->where('status', 'novo')->countAllResults();
+            $stats['abertos'] = $this->ticketModel->where('status', 'aberto')->countAllResults();
+            $stats['em_progresso'] = $this->ticketModel->where('status', 'em_progresso')->countAllResults();
+            $stats['pendentes'] = $this->ticketModel->where('status', 'pendente')->countAllResults();
+            $stats['resolvidos'] = $this->ticketModel->where('status', 'resolvido')->countAllResults();
+            $stats['fechados'] = $this->ticketModel->where('status', 'fechado')->countAllResults();
 
             // Tickets recentes (todos)
             $ticketsRecentes = $this->ticketModel->listarTickets([], 5);
@@ -87,7 +87,9 @@ class Dashboard extends BaseController
             if ($user->funcao === 'cliente') {
                 $count->where('usuario_id', $user->id);
             }
-            $ticketsPorPrioridade[$prioridade['nome']] = [
+            $ticketsPorPrioridade[] = [
+                'id' => $prioridade['id'],
+                'nome' => $prioridade['nome'],
                 'count' => $count->countAllResults(),
                 'cor' => $prioridade['cor']
             ];
@@ -101,7 +103,9 @@ class Dashboard extends BaseController
             if ($user->funcao === 'cliente') {
                 $count->where('usuario_id', $user->id);
             }
-            $ticketsPorCategoria[$categoria['nome']] = [
+            $ticketsPorCategoria[] = [
+                'id' => $categoria['id'],
+                'nome' => $categoria['nome'],
                 'count' => $count->countAllResults(),
                 'cor' => $categoria['cor']
             ];

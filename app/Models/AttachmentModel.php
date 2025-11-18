@@ -25,7 +25,7 @@ class AttachmentModel extends Model
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'criado_em';
-    protected $updatedField  = 'atualizado_em';
+    protected $updatedField  = ''; // Anexos não precisam rastrear atualizações
 
     // Validation
     protected $validationRules = [
