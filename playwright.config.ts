@@ -30,15 +30,29 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
 
-    /* Screenshot on failure */
-    screenshot: 'only-on-failure',
+    /* Screenshot sempre */
+    screenshot: 'on',
+
+    /* Video de todas as interações */
+    video: 'retain',
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: [
+            '--disable-dev-shm-usage',
+            '--disable-blink-features=AutomationControlled',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-gpu',
+          ],
+        },
+      },
     },
   ],
 

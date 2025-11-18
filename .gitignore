@@ -105,6 +105,7 @@ package-lock.json
 playwright-report/
 test-results/
 .playwright/
+test-screenshots/
 
 #-------------------------
 # IDE / Development Files
