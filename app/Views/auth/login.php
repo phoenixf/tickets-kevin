@@ -64,9 +64,6 @@
                 autofocus
             >
         </div>
-        <?php if (has_error('email')) : ?>
-            <p class="mt-1 text-sm text-red-600"><?= error('email') ?></p>
-        <?php endif ?>
     </div>
 
     <!-- Campo de Senha -->
@@ -89,9 +86,6 @@
                 required
             >
         </div>
-        <?php if (has_error('password')) : ?>
-            <p class="mt-1 text-sm text-red-600"><?= error('password') ?></p>
-        <?php endif ?>
     </div>
 
     <!-- Lembrar-me -->
