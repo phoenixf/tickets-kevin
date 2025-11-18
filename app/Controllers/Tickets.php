@@ -6,6 +6,8 @@ use App\Controllers\BaseController;
 use App\Models\TicketModel;
 use App\Models\CategoryModel;
 use App\Models\PriorityModel;
+use App\Models\CommentModel;
+use App\Models\AttachmentModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Tickets extends BaseController
@@ -13,12 +15,16 @@ class Tickets extends BaseController
     protected $ticketModel;
     protected $categoryModel;
     protected $priorityModel;
+    protected $commentModel;
+    protected $attachmentModel;
 
     public function __construct()
     {
         $this->ticketModel = new TicketModel();
         $this->categoryModel = new CategoryModel();
         $this->priorityModel = new PriorityModel();
+        $this->commentModel = new CommentModel();
+        $this->attachmentModel = new AttachmentModel();
     }
 
     /**
@@ -133,10 +139,19 @@ class Tickets extends BaseController
                 ->with('error', 'Você não tem permissão para visualizar este ticket');
         }
 
+        // Buscar comentários (clientes não veem comentários internos)
+        $incluirInternos = $user->funcao !== 'cliente';
+        $comentarios = $this->commentModel->getComentariosDoTicket($id, $incluirInternos);
+
+        // Buscar anexos
+        $anexos = $this->attachmentModel->getAnexosDoTicket($id);
+
         $data = [
             'title' => 'Ticket #' . $ticket['id'],
             'user' => $user,
             'ticket' => $ticket,
+            'comentarios' => $comentarios,
+            'anexos' => $anexos,
         ];
 
         return view('tickets/show', $data);

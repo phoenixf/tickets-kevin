@@ -30,4 +30,13 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
     $routes->get('tickets/(:num)/edit', 'Tickets::edit/$1');      // Formulário editar
     $routes->post('tickets/(:num)', 'Tickets::update/$1');        // Atualizar
     $routes->delete('tickets/(:num)', 'Tickets::delete/$1');      // Deletar
+
+    // Comentários
+    $routes->post('tickets/(:num)/comments', 'Comments::store/$1');           // Adicionar comentário
+    $routes->delete('comments/(:num)', 'Comments::delete/$1');                 // Deletar comentário
+
+    // Anexos
+    $routes->post('tickets/(:num)/attachments', 'Attachments::upload/$1');    // Upload anexo
+    $routes->get('attachments/(:num)/download', 'Attachments::download/$1');  // Download anexo
+    $routes->delete('attachments/(:num)', 'Attachments::delete/$1');          // Deletar anexo
 });
