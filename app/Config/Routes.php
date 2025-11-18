@@ -17,6 +17,9 @@ $routes->get('/', static function() {
 // Rotas de autenticação (login, register, logout, etc.)
 service('auth')->routes($routes);
 
+// Rota AJAX para login moderno (sem reload de página)
+$routes->post('login/ajax', 'Login::loginAjax');
+
 // Adicionar rota POST para logout (Shield só cria GET por padrão)
 $routes->post('logout', '\CodeIgniter\Shield\Controllers\LoginController::logoutAction');
 
@@ -46,3 +49,4 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
 
 // Relatórios (apenas admin e agentes)
 $routes->get('relatorios', 'Relatorios::index', ['filter' => 'session']);
+$routes->get('relatorios/pdf', 'Relatorios::exportarPdf', ['filter' => 'session']);
