@@ -67,7 +67,7 @@ class RelatorioModel extends Model
             $tempo_medio_query->where('prioridade_id', $filtros['prioridade_id']);
         }
 
-        $tempo_medio_query->whereNotNull('resolvido_em');
+        $tempo_medio_query->where('resolvido_em IS NOT NULL');
         $tempo_medio_result = $tempo_medio_query->get()->getRowArray();
         $tempo_medio_resolucao = $tempo_medio_result['tempo_medio'] ? round($tempo_medio_result['tempo_medio'], 2) : 0;
 
@@ -176,7 +176,7 @@ class RelatorioModel extends Model
         // Somente agentes (usuários com perfil agente ou admin)
         $where_conditions[] = "usuarios.id IN (
             SELECT user_id FROM auth_groups_users
-            WHERE group IN ('admin', 'agente')
+            WHERE `group` IN ('admin', 'agente')
         )";
 
         if (!empty($where_conditions)) {

@@ -43,3 +43,6 @@ $routes->group('', ['filter' => 'session'], static function ($routes) {
     $routes->get('attachments/(:num)/download', 'Attachments::download/$1');  // Download anexo
     $routes->delete('attachments/(:num)', 'Attachments::delete/$1');          // Deletar anexo
 });
+
+// Relatórios (apenas admin e agentes)
+$routes->get('relatorios', 'Relatorios::index', ['filter' => 'session']);
