@@ -1,0 +1,196 @@
+<?php
+
+namespace App\Models;
+
+use CodeIgniter\Model;
+
+class TicketModel extends Model
+{
+    protected $table            = 'tickets';
+    protected $primaryKey       = 'id';
+    protected $useAutoIncrement = true;
+    protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = true;
+    protected $allowedFields    = [
+        'titulo',
+        'descricao',
+        'usuario_id',
+        'responsavel_id',
+        'categoria_id',
+        'prioridade_id',
+        'status',
+        'data_vencimento'
+    ];
+
+    protected bool $allowEmptyInserts = false;
+    protected bool $updateOnlyChanged = true;
+
+    protected array $casts = [];
+    protected array $castHandlers = [];
+
+    // Dates
+    protected $useTimestamps = true;
+    protected $dateFormat    = 'datetime';
+    protected $createdField  = 'criado_em';
+    protected $updatedField  = 'atualizado_em';
+    protected $deletedField  = 'deleted_at';
+
+    // Validation
+    protected $validationRules = [
+        'titulo' => [
+            'rules' => 'required|min_length[10]|max_length[255]',
+            'errors' => [
+                'required' => 'O título é obrigatório',
+                'min_length' => 'O título deve ter no mínimo 10 caracteres',
+                'max_length' => 'O título deve ter no máximo 255 caracteres'
+            ]
+        ],
+        'descricao' => [
+            'rules' => 'required|min_length[20]',
+            'errors' => [
+                'required' => 'A descrição é obrigatória',
+                'min_length' => 'A descrição deve ter no mínimo 20 caracteres'
+            ]
+        ],
+        'usuario_id' => [
+            'rules' => 'required|integer|is_not_unique[usuarios.id]',
+            'errors' => [
+                'required' => 'O usuário é obrigatório',
+                'integer' => 'ID do usuário inválido',
+                'is_not_unique' => 'Usuário não encontrado'
+            ]
+        ],
+        'prioridade_id' => [
+            'rules' => 'required|integer|is_not_unique[prioridades.id]',
+            'errors' => [
+                'required' => 'A prioridade é obrigatória',
+                'integer' => 'ID da prioridade inválido',
+                'is_not_unique' => 'Prioridade não encontrada'
+            ]
+        ],
+        'status' => [
+            'rules' => 'required|in_list[novo,em_andamento,aguardando,resolvido,fechado]',
+            'errors' => [
+                'required' => 'O status é obrigatório',
+                'in_list' => 'Status inválido'
+            ]
+        ]
+    ];
+
+    protected $validationMessages   = [];
+    protected $skipValidation       = false;
+    protected $cleanValidationRules = true;
+
+    // Callbacks
+    protected $allowCallbacks = true;
+    protected $beforeInsert   = [];
+    protected $afterInsert    = [];
+    protected $beforeUpdate   = [];
+    protected $afterUpdate    = [];
+    protected $beforeFind     = [];
+    protected $afterFind      = [];
+    protected $beforeDelete   = [];
+    protected $afterDelete    = [];
+
+    /**
+     * Buscar ticket com todos os relacionamentos
+     */
+    public function getTicketCompleto($id)
+    {
+        return $this->select('
+                tickets.*,
+                usuarios.nome as usuario_nome,
+                usuarios.email as usuario_email,
+                responsavel.nome as responsavel_nome,
+                responsavel.email as responsavel_email,
+                categorias.nome as categoria_nome,
+                categorias.cor as categoria_cor,
+                prioridades.nome as prioridade_nome,
+                prioridades.cor as prioridade_cor,
+                prioridades.nivel as prioridade_nivel
+            ')
+            ->join('usuarios', 'usuarios.id = tickets.usuario_id', 'left')
+            ->join('usuarios as responsavel', 'responsavel.id = tickets.responsavel_id', 'left')
+            ->join('categorias', 'categorias.id = tickets.categoria_id', 'left')
+            ->join('prioridades', 'prioridades.id = tickets.prioridade_id', 'left')
+            ->find($id);
+    }
+
+    /**
+     * Listar tickets com paginação e filtros
+     */
+    public function listarTickets($filtros = [], $limite = 20, $offset = 0)
+    {
+        $builder = $this->select('
+                tickets.*,
+                usuarios.nome as usuario_nome,
+                responsavel.nome as responsavel_nome,
+                categorias.nome as categoria_nome,
+                prioridades.nome as prioridade_nome,
+                prioridades.cor as prioridade_cor
+            ')
+            ->join('usuarios', 'usuarios.id = tickets.usuario_id', 'left')
+            ->join('usuarios as responsavel', 'responsavel.id = tickets.responsavel_id', 'left')
+            ->join('categorias', 'categorias.id = tickets.categoria_id', 'left')
+            ->join('prioridades', 'prioridades.id = tickets.prioridade_id', 'left');
+
+        // Aplicar filtros
+        if (!empty($filtros['status'])) {
+            $builder->where('tickets.status', $filtros['status']);
+        }
+
+        if (!empty($filtros['prioridade_id'])) {
+            $builder->where('tickets.prioridade_id', $filtros['prioridade_id']);
+        }
+
+        if (!empty($filtros['categoria_id'])) {
+            $builder->where('tickets.categoria_id', $filtros['categoria_id']);
+        }
+
+        if (!empty($filtros['usuario_id'])) {
+            $builder->where('tickets.usuario_id', $filtros['usuario_id']);
+        }
+
+        if (!empty($filtros['responsavel_id'])) {
+            $builder->where('tickets.responsavel_id', $filtros['responsavel_id']);
+        }
+
+        if (!empty($filtros['busca'])) {
+            $builder->groupStart()
+                ->like('tickets.titulo', $filtros['busca'])
+                ->orLike('tickets.descricao', $filtros['busca'])
+                ->groupEnd();
+        }
+
+        return $builder->orderBy('tickets.criado_em', 'DESC')
+            ->limit($limite, $offset)
+            ->findAll();
+    }
+
+    /**
+     * Contar tickets por status
+     */
+    public function contarPorStatus()
+    {
+        return $this->select('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->findAll();
+    }
+
+    /**
+     * Buscar tickets do usuário
+     */
+    public function ticketsDoUsuario($usuarioId, $limite = 10)
+    {
+        return $this->listarTickets(['usuario_id' => $usuarioId], $limite);
+    }
+
+    /**
+     * Buscar tickets atribuídos ao responsável
+     */
+    public function ticketsDoResponsavel($responsavelId, $limite = 10)
+    {
+        return $this->listarTickets(['responsavel_id' => $responsavelId], $limite);
+    }
+}
