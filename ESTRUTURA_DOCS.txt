@@ -1,0 +1,208 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    ESTRUTURA DE DOCUMENTAÇÃO - SISTEMA DE TICKETS
+═══════════════════════════════════════════════════════════════════════════════
+
+📂 ESTRUTURA GERAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+tickets-kevin/
+│
+├── 📄 README.md                             ← Início rápido + links para docs/
+├── ESTRUTURA_DOCS.txt                       ← Este arquivo
+│
+└── 📁 docs/                                 ← TODA DOCUMENTAÇÃO AQUI
+    │
+    ├── 📄 README.md                         ← ÍNDICE CENTRAL - comece por aqui!
+    │                                           Links para tudo + quick start
+    │
+    ├── 📁 projeto/                          ← CONTEXTO GERAL
+    │   ├── README.md                        Navegação da pasta
+    │   ├── CLAUDE.md                        Guia para Claude Code
+    │   │   ├─ Estado atual do projeto
+    │   │   ├─ O que foi implementado
+    │   │   ├─ Próximos passos
+    │   │   └─ Portas e configurações
+    │   │
+    │   └── CHANGELOG.md                     Histórico de versões
+    │       ├─ Mudanças em cada release
+    │       ├─ Features adicionadas
+    │       └─ Segue padrão Keep a Changelog
+    │
+    ├── 📁 desenvolvimento/                  ← GUIAS TÉCNICOS
+    │   ├── README.md                        Navegação da pasta
+    │   │
+    │   ├── SETUP_INSTRUCTIONS.md            Instalação completa
+    │   │   ├─ Pré-requisitos
+    │   │   ├─ Passo a passo
+    │   │   └─ Configurações
+    │   │
+    │   ├── SETUP_COMPLETE.md                Status de setup
+    │   │   ├─ Confirmação de instalação
+    │   │   └─ Checklist
+    │   │
+    │   ├── BANCO_DE_DADOS.md                Documentação do banco
+    │   │   ├─ Estrutura de 7 tabelas
+    │   │   ├─ Diagramas ER
+    │   │   ├─ Relacionamentos
+    │   │   └─ Queries úteis
+    │   │
+    │   ├── TESTING.md                       Testes automatizados
+    │   │   ├─ Testes unitários
+    │   │   ├─ Testes de integração
+    │   │   └─ Testes do banco
+    │   │
+    │   ├── TESTE_VISUAL.md                  Testes visuais
+    │   │   ├─ Playwright
+    │   │   ├─ Testes end-to-end
+    │   │   └─ Verificação visual
+    │   │
+    │   ├── TESTS_REPORT.md                  Relatórios de testes
+    │   │   ├─ Resultados
+    │   │   └─ Cobertura
+    │   │
+    │   └── PLANEJAMENTO_RELATORIOS.md       Planejamento específico
+    │       └─ Relatórios e métricas
+    │
+    └── 📁 features/                         ← DOCUMENTAÇÃO DE FEATURES
+        ├── README.md                        Navegação da pasta
+        │
+        ├── PLANEJAMENTO.md                  Roadmap e planejamento
+        │   ├─ Features planejadas
+        │   ├─ Prioridades
+        │   └─ Arquitetura
+        │
+        ├── TICKETS.md                       Requisitos originais
+        │   ├─ Especificações
+        │   ├─ Casos de uso
+        │   └─ Requisitos funcionais
+        │
+        └── RELATORIOS.md                    Feature: Relatórios
+            ├─ Funcionamento
+            ├─ Exportação em PDF
+            └─ Como usar
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🚀 COMO NAVEGAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. PRIMEIRA VEZ NO PROJETO?
+   └─ Leia: docs/README.md
+      └─ Depois: docs/desenvolvimento/SETUP_INSTRUCTIONS.md
+
+2. CONTINUANDO DESENVOLVIMENTO?
+   └─ Leia: docs/projeto/CLAUDE.md
+      └─ Depois: docs/desenvolvimento/ (relevante para sua tarefa)
+
+3. VERIFICANDO HISTÓRICO?
+   └─ Leia: docs/projeto/CHANGELOG.md
+
+4. PRECISA ENTENDER O BANCO?
+   └─ Leia: docs/desenvolvimento/BANCO_DE_DADOS.md
+
+5. TESTANDO?
+   └─ Leia: docs/desenvolvimento/TESTING.md ou TESTE_VISUAL.md
+
+6. ENTENDO O PLANEJAMENTO?
+   └─ Leia: docs/features/PLANEJAMENTO.md
+
+═══════════════════════════════════════════════════════════════════════════════
+
+⚡ QUICK START
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Instalar:
+  composer install
+  php spark migrate
+  php spark db:seed PrioridadesSeeder
+
+Rodar:
+  php spark serve --port 8081
+
+Acessar:
+  http://localhost:8081
+
+Database:
+  Host: 127.0.0.1:3310 (dev) ou localhost:3306 (prod)
+  User: tickets_user
+  Pass: tickets_pass_2024
+  DB:   tickets_db
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 ESTRUTURA POR TIPO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+CONTEXTO GERAL
+├─ docs/projeto/CLAUDE.md         (← LEIA PARA CONTEXTO)
+└─ docs/projeto/CHANGELOG.md       (← LEIA PARA HISTÓRICO)
+
+SETUP & INSTALAÇÃO
+├─ docs/desenvolvimento/SETUP_INSTRUCTIONS.md
+└─ docs/desenvolvimento/SETUP_COMPLETE.md
+
+BANCO DE DADOS
+└─ docs/desenvolvimento/BANCO_DE_DADOS.md
+
+TESTES
+├─ docs/desenvolvimento/TESTING.md
+└─ docs/desenvolvimento/TESTE_VISUAL.md
+
+FEATURES
+├─ docs/features/PLANEJAMENTO.md    (ROADMAP)
+├─ docs/features/TICKETS.md         (REQUISITOS)
+└─ docs/features/RELATORIOS.md      (FEATURE ESPECÍFICA)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+💾 ARQUIVOS POR LOCALIZAÇÃO ANTERIOR → NOVA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Raiz (/) → docs/projeto/:
+  CLAUDE.md           → docs/projeto/CLAUDE.md
+  CHANGELOG.md        → docs/projeto/CHANGELOG.md
+
+docs/ → docs/desenvolvimento/:
+  BANCO_DE_DADOS.md   → docs/desenvolvimento/BANCO_DE_DADOS.md
+  TESTING.md          → docs/desenvolvimento/TESTING.md
+
+docs/setup/ → docs/desenvolvimento/:
+  SETUP_*.md          → docs/desenvolvimento/SETUP_*.md
+
+docs/development/ → docs/desenvolvimento/:
+  TESTE_VISUAL.md     → docs/desenvolvimento/TESTE_VISUAL.md
+  TESTS_REPORT.md     → docs/desenvolvimento/TESTS_REPORT.md
+  PLANEJAMENTO_*.md   → docs/desenvolvimento/PLANEJAMENTO_*.md
+
+docs/ → docs/features/:
+  PLANEJAMENTO.md     → docs/features/PLANEJAMENTO.md
+  tickets.md          → docs/features/TICKETS.md
+  CORREÇÕES_*.md      → docs/features/RELATORIOS.md
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ VERIFICAÇÃO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ver todas as documentações:
+  ls -R docs/
+
+Ver índice central:
+  cat docs/README.md
+
+Ver estrutura visual:
+  tree docs/ (se tree está instalado)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📝 NOTAS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• Documentação atualizada: 2025-11-18
+• Todos os arquivos .md estão centralizados em docs/
+• Cada pasta tem um README.md com navegação
+• Links internos usam caminhos relativos
+• Histórico git mantido (git mv usado para mover)
+• docs/README.md é o ponto de entrada principal
+
+═══════════════════════════════════════════════════════════════════════════════
