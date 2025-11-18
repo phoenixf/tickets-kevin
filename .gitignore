@@ -63,6 +63,13 @@ writable/uploads/*
 writable/debugbar/*
 !writable/debugbar/index.html
 
+# SQLite database files (development only)
+writable/database.db
+writable/*.db
+
+# Public writable directory (sessions, cache, etc.)
+public/writable/*
+
 php_errors.log
 
 #-------------------------
@@ -85,6 +92,20 @@ phpunit
 # Composer
 #-------------------------
 vendor/
+
+#-------------------------
+# Node / NPM
+#-------------------------
+node_modules/
+package-lock.json
+
+#-------------------------
+# Playwright
+#-------------------------
+playwright-report/
+test-results/
+.playwright/
+test-screenshots/
 
 #-------------------------
 # IDE / Development Files
