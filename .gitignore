@@ -67,6 +67,9 @@ writable/debugbar/*
 writable/database.db
 writable/*.db
 
+# Public writable directory (sessions, cache, etc.)
+public/writable/*
+
 php_errors.log
 
 #-------------------------
