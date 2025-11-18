@@ -205,15 +205,24 @@ Acesse: http://localhost:8080
 
 ## 📖 Documentação
 
-### 📚 Guias Principais
-- **[CHANGELOG.md](CHANGELOG.md)** - Histórico de mudanças e versionamento
-- **[CLAUDE.md](CLAUDE.md)** - Guia para desenvolvimento com Claude Code
+Toda documentação está organizada em [`docs/`](./docs/):
 
-### 📁 Documentação Técnica (`docs/`)
-- **[PLANEJAMENTO.md](docs/PLANEJAMENTO.md)** - Planejamento completo do sistema, arquitetura, roadmap
-- **[BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)** - Documentação detalhada do banco, queries úteis, diagramas ER
-- **[TESTING.md](docs/TESTING.md)** - Guia completo de testes (unitários, integração, banco de dados)
-- **[tickets.md](docs/tickets.md)** - Requisitos originais do sistema
+### 📚 Documentação do Projeto
+- **[CLAUDE.md](./docs/projeto/CLAUDE.md)** - Guia para desenvolvimento com Claude Code
+- **[CHANGELOG.md](./docs/projeto/CHANGELOG.md)** - Histórico de mudanças e versionamento
+
+### 🛠️ Documentação de Desenvolvimento
+- **[SETUP_INSTRUCTIONS.md](./docs/desenvolvimento/SETUP_INSTRUCTIONS.md)** - Guia de instalação e configuração
+- **[SETUP_COMPLETE.md](./docs/desenvolvimento/SETUP_COMPLETE.md)** - Status de setup completo
+- **[BANCO_DE_DADOS.md](./docs/desenvolvimento/BANCO_DE_DADOS.md)** - Documentação detalhada do banco, queries úteis
+- **[TESTING.md](./docs/desenvolvimento/TESTING.md)** - Guia completo de testes
+- **[TESTE_VISUAL.md](./docs/desenvolvimento/TESTE_VISUAL.md)** - Guia de testes visuais e Playwright
+- **[TESTS_REPORT.md](./docs/desenvolvimento/TESTS_REPORT.md)** - Relatórios de testes
+
+### 🎯 Documentação de Features
+- **[PLANEJAMENTO.md](./docs/features/PLANEJAMENTO.md)** - Planejamento completo do sistema e roadmap
+- **[TICKETS.md](./docs/features/TICKETS.md)** - Requisitos originais do sistema
+- **[RELATORIOS.md](./docs/features/RELATORIOS.md)** - Documentação de relatórios e correções implementadas
 
 ---
 
