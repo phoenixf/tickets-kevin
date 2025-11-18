@@ -53,31 +53,8 @@
         }
     </style>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        dark: {
-                            50: '#1a1a1a',
-                            100: '#2d2d2d',
-                            200: '#404040',
-                            300: '#525252',
-                            400: '#666666',
-                            500: '#808080',
-                            600: '#999999',
-                            700: '#b3b3b3',
-                            800: '#cccccc',
-                            900: '#e6e6e6',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Tailwind CSS (Build Local - 32KB) -->
+    <link rel="stylesheet" href="/css/tailwind.output.css">
 
     <!-- Flowbite CSS -->
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />

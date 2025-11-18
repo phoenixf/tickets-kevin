@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title ?? 'Sistema de Tickets') ?></title>
 
-    <!-- Tailwind CSS (CDN para desenvolvimento) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Build Local - 32KB) -->
+    <link rel="stylesheet" href="/css/tailwind.output.css">
 
     <!-- Flowbite CSS -->
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />

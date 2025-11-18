@@ -63,7 +63,6 @@ class Relatorios extends BaseController
 
         // 4. Buscar dados usando RelatorioModel
         $kpis = $this->relatorioModel->getKPIs($filtros);
-        $performanceAgentes = $this->relatorioModel->getPerformanceAgentes($filtros);
         $ticketsPorPeriodo = $this->relatorioModel->getTicketsPorPeriodo($filtros, 'day');
         $distribuicaoStatus = $this->relatorioModel->getDistribuicaoPorStatus($filtros);
         $distribuicaoPrioridade = $this->relatorioModel->getDistribuicaoPorPrioridade($filtros);
@@ -74,15 +73,25 @@ class Relatorios extends BaseController
         $ticketsProximosVencimento = $this->relatorioModel->getTicketsProximosVencimento(10);
         $fcrMetrics = $this->relatorioModel->getFirstContactResolution($filtros);
 
+        // Performance por agente - APENAS quando nenhum agente específico está selecionado
+        $performanceAgentes = [];
+        $performanceAgenteComparativo = [];
+        if (empty($agente_id)) {
+            // Tabela comparativa completa (sem filtro de agente)
+            $performanceAgenteComparativo = $this->relatorioModel->getPerformanceAgentes($filtros);
+            log_message('debug', 'Performance Agente Comparativo: ' . json_encode($performanceAgenteComparativo));
+        } else {
+            // Performance do agente específico (manter compatibilidade com código antigo)
+            $performanceAgentes = $this->relatorioModel->getPerformanceAgentes($filtros);
+        }
+
         // 5. Buscar listas para filtros
         // Lista de agentes (apenas admin/agente função)
         $db = \Config\Database::connect();
         $agentes = $db->table('usuarios')
-            ->select('usuarios.id, usuarios.nome')
-            ->join('auth_groups_users', 'auth_groups_users.user_id = usuarios.id')
-            ->whereIn('auth_groups_users.group', ['admin', 'agente'])
-            ->groupBy('usuarios.id, usuarios.nome')
-            ->orderBy('usuarios.nome', 'ASC')
+            ->select('id, nome')
+            ->whereIn('funcao', ['admin', 'agente'])
+            ->orderBy('nome', 'ASC')
             ->get()
             ->getResultArray();
 
@@ -98,6 +107,7 @@ class Relatorios extends BaseController
             'user' => $user,
             'kpis' => $kpis,
             'performanceAgentes' => $performanceAgentes,
+            'performanceAgenteComparativo' => $performanceAgenteComparativo,
             'ticketsPorPeriodo' => $ticketsPorPeriodo,
             'distribuicaoStatus' => $distribuicaoStatus,
             'distribuicaoPrioridade' => $distribuicaoPrioridade,

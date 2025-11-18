@@ -335,6 +335,89 @@
     </div>
 </div>
 
+<!-- Comparativo de Performance por Agente (apenas quando nenhum agente selecionado) -->
+<?php if (!empty($performanceAgenteComparativo)): ?>
+<div class="mb-8">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">Comparativo de Agentes</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Performance e métricas por agente</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                        <th class="text-left py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Agente</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Atribuídos</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Resolvidos</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Taxa</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Tempo 1ª Resp.</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">Tempo Resol.</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">SLA 1ª Resp.</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">SLA Resol.</th>
+                        <th class="text-center py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">FCR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($performanceAgenteComparativo as $agente): ?>
+                    <tr class="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <td class="py-3 px-4">
+                            <div class="font-medium text-gray-900 dark:text-white"><?= esc($agente['agente_nome']) ?></div>
+                        </td>
+                        <td class="text-center py-3 px-4 text-gray-700 dark:text-gray-300 font-semibold"><?= $agente['total_atribuido'] ?></td>
+                        <td class="text-center py-3 px-4 text-gray-700 dark:text-gray-300 font-semibold"><?= $agente['resolvidos'] ?></td>
+                        <td class="text-center py-3 px-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $agente['taxa_resolucao'] >= 80 ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($agente['taxa_resolucao'] >= 60 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300') ?>">
+                                <?= number_format($agente['taxa_resolucao'], 1) ?>%
+                            </span>
+                        </td>
+                        <td class="text-center py-3 px-4 text-gray-700 dark:text-gray-300"><?= $agente['tempo_medio_primeira_resposta'] > 0 ? number_format($agente['tempo_medio_primeira_resposta'], 1) . 'h' : '-' ?></td>
+                        <td class="text-center py-3 px-4 text-gray-700 dark:text-gray-300"><?= $agente['tempo_medio_resolucao'] > 0 ? number_format($agente['tempo_medio_resolucao'], 1) . 'h' : '-' ?></td>
+                        <td class="text-center py-3 px-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $agente['sla_primeira_resposta'] >= 85 ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($agente['sla_primeira_resposta'] >= 70 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300') ?>">
+                                <?= number_format($agente['sla_primeira_resposta'], 1) ?>%
+                            </span>
+                        </td>
+                        <td class="text-center py-3 px-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $agente['sla_resolucao'] >= 85 ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($agente['sla_resolucao'] >= 70 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300') ?>">
+                                <?= number_format($agente['sla_resolucao'], 1) ?>%
+                            </span>
+                        </td>
+                        <td class="text-center py-3 px-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?= $agente['fcr_rate'] >= 70 ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($agente['fcr_rate'] >= 50 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300' : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300') ?>">
+                                <?= number_format($agente['fcr_rate'], 1) ?>%
+                            </span>
+                        </td>
+                    </tr>
+                    <?php endforeach ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Legenda -->
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+                <strong>Legenda:</strong>
+                Taxa = % resolvidos do total |
+                SLA 1ª Resp. = % dentro do tempo de primeira resposta |
+                SLA Resol. = % resolvidos dentro do prazo |
+                FCR = % resolvidos no primeiro contato
+            </p>
+        </div>
+    </div>
+</div>
+<?php endif ?>
+
 <!-- ApexCharts CDN -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
@@ -563,7 +646,7 @@ document.getElementById('export-btn').addEventListener('click', function() {
     const params = new URLSearchParams(formData);
 
     // Redirecionar para rota de exportação PDF
-    window.location.href = '/relatorios/exportarPdf?' + params.toString();
+    window.open('/relatorios/pdf?' + params.toString(), '_blank');
 });
 
 // Quick Filters functionality

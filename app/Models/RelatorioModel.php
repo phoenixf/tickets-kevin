@@ -111,25 +111,76 @@ class RelatorioModel extends Model
     {
         $db = \Config\Database::connect();
 
-        // Query principal com subqueries para reabertura
+        // Query principal com TODAS as métricas
         $sql = "
             SELECT
                 usuarios.id as agente_id,
                 usuarios.nome as agente_nome,
                 COUNT(tickets.id) as total_atribuido,
                 SUM(CASE WHEN tickets.status IN ('resolvido', 'fechado') THEN 1 ELSE 0 END) as resolvidos,
+                SUM(CASE WHEN tickets.status = 'em_andamento' THEN 1 ELSE 0 END) as em_andamento,
                 SUM(CASE WHEN tickets.status NOT IN ('resolvido', 'fechado') THEN 1 ELSE 0 END) as pendentes,
-                AVG(
-                    CASE
-                        WHEN tickets.resolvido_em IS NOT NULL
-                        THEN TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.resolvido_em)
-                        ELSE NULL
-                    END
-                ) as tempo_medio_minutos,
                 ROUND(
-                    (SUM(CASE WHEN tickets.status IN ('resolvido', 'fechado') THEN 1 ELSE 0 END) / COUNT(tickets.id)) * 100,
-                    2
+                    (SUM(CASE WHEN tickets.status IN ('resolvido', 'fechado') THEN 1 ELSE 0 END) / NULLIF(COUNT(tickets.id), 0)) * 100,
+                    1
                 ) as taxa_resolucao,
+
+                -- Tempo médio primeira resposta (em horas)
+                ROUND(
+                    AVG(
+                        CASE WHEN tickets.primeira_resposta_em IS NOT NULL
+                        THEN TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.primeira_resposta_em) / 60
+                        ELSE NULL END
+                    ),
+                    1
+                ) as tempo_medio_primeira_resposta,
+
+                -- Tempo médio resolução (em horas)
+                ROUND(
+                    AVG(
+                        CASE WHEN tickets.resolvido_em IS NOT NULL
+                        THEN TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.resolvido_em) / 60
+                        ELSE NULL END
+                    ),
+                    1
+                ) as tempo_medio_resolucao,
+
+                -- SLA Primeira Resposta
+                ROUND(
+                    (SUM(
+                        CASE WHEN tickets.primeira_resposta_em IS NOT NULL
+                        AND TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.primeira_resposta_em) <= COALESCE(sla.tempo_primeira_resposta_minutos, 999999)
+                        THEN 1 ELSE 0 END
+                    ) / NULLIF(COUNT(tickets.id), 0)) * 100,
+                    1
+                ) as sla_primeira_resposta,
+
+                -- SLA Resolução
+                ROUND(
+                    (SUM(
+                        CASE WHEN tickets.resolvido_em IS NOT NULL
+                        AND TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.resolvido_em) <= COALESCE(sla.tempo_resolucao_minutos, 999999)
+                        THEN 1 ELSE 0 END
+                    ) / NULLIF(SUM(CASE WHEN tickets.status IN ('resolvido', 'fechado') THEN 1 ELSE 0 END), 0)) * 100,
+                    1
+                ) as sla_resolucao,
+
+                -- FCR (First Contact Resolution)
+                ROUND(
+                    (SUM(
+                        CASE WHEN tickets.status IN ('resolvido', 'fechado')
+                        AND (
+                            SELECT COUNT(*)
+                            FROM comentarios c
+                            WHERE c.ticket_id = tickets.id
+                            AND c.usuario_id != tickets.usuario_id
+                        ) <= 1
+                        THEN 1 ELSE 0 END
+                    ) / NULLIF(SUM(CASE WHEN tickets.status IN ('resolvido', 'fechado') THEN 1 ELSE 0 END), 0)) * 100,
+                    1
+                ) as fcr_rate,
+
+                -- Reaberturas
                 (
                     SELECT COUNT(DISTINCT h1.ticket_id)
                     FROM historico_tickets h1
@@ -142,6 +193,7 @@ class RelatorioModel extends Model
                 ) as total_reaberturas
             FROM usuarios
             LEFT JOIN tickets ON tickets.responsavel_id = usuarios.id
+            LEFT JOIN sla_configuracoes sla ON sla.prioridade_id = tickets.prioridade_id
         ";
 
         $where_conditions = [];
@@ -185,27 +237,33 @@ class RelatorioModel extends Model
 
         $sql .= " GROUP BY usuarios.id, usuarios.nome";
         $sql .= " HAVING total_atribuido > 0";
-        $sql .= " ORDER BY resolvidos DESC, tempo_medio_minutos ASC";
+        $sql .= " ORDER BY resolvidos DESC, tempo_medio_resolucao ASC";
 
         $query = $db->query($sql, $params);
         $resultados = $query->getResultArray();
 
-        // Calcular taxa de reabertura
+        // Processar resultados
         foreach ($resultados as &$resultado) {
-            $resultado['tempo_medio_minutos'] = $resultado['tempo_medio_minutos']
-                ? round($resultado['tempo_medio_minutos'], 2)
-                : 0;
-
-            $resultado['taxa_reabertura'] = $resultado['resolvidos'] > 0
-                ? round(($resultado['total_reaberturas'] / $resultado['resolvidos']) * 100, 2)
-                : 0;
-
-            // Converter para int
+            // Converter valores para tipos apropriados
             $resultado['agente_id'] = (int) $resultado['agente_id'];
             $resultado['total_atribuido'] = (int) $resultado['total_atribuido'];
             $resultado['resolvidos'] = (int) $resultado['resolvidos'];
+            $resultado['em_andamento'] = (int) $resultado['em_andamento'];
             $resultado['pendentes'] = (int) $resultado['pendentes'];
             $resultado['total_reaberturas'] = (int) $resultado['total_reaberturas'];
+
+            // Garantir valores numéricos (não null)
+            $resultado['taxa_resolucao'] = $resultado['taxa_resolucao'] ?? 0;
+            $resultado['tempo_medio_primeira_resposta'] = $resultado['tempo_medio_primeira_resposta'] ?? 0;
+            $resultado['tempo_medio_resolucao'] = $resultado['tempo_medio_resolucao'] ?? 0;
+            $resultado['sla_primeira_resposta'] = $resultado['sla_primeira_resposta'] ?? 0;
+            $resultado['sla_resolucao'] = $resultado['sla_resolucao'] ?? 0;
+            $resultado['fcr_rate'] = $resultado['fcr_rate'] ?? 0;
+
+            // Taxa de reabertura
+            $resultado['taxa_reabertura'] = $resultado['resolvidos'] > 0
+                ? round(($resultado['total_reaberturas'] / $resultado['resolvidos']) * 100, 2)
+                : 0;
         }
 
         return $resultados;

@@ -57,7 +57,7 @@
                 : $ticket['titulo'];
             ?>
 
-            <a href="/tickets/<?= $ticket['id'] ?>" class="<?= $borderColor ?> <?= $bgColor ?> rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer dark:transition-colors">
+            <a href="/tickets/<?= $ticket['id'] ?>" class="<?= $borderColor ?> <?= $bgColor ?> rounded-lg p-4 hover:border-l-8 hover:shadow-xl transition-all duration-200 cursor-pointer dark:transition-colors">
                 <div class="flex items-start justify-between mb-3">
                     <div>
                         <p class="text-sm font-bold text-gray-900 dark:text-white">
@@ -104,7 +104,7 @@
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
 
     <!-- Total de Tickets -->
-    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-md rounded-lg hover:shadow-lg transition-all duration-200">
+    <a href="/tickets" class="bg-white dark:bg-gray-800 overflow-hidden shadow-md rounded-lg hover:shadow-lg hover:border-2 hover:border-indigo-600 transition-all duration-200 cursor-pointer border-2 border-transparent">
         <div class="p-5">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -118,12 +118,7 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 dark:bg-gray-700 px-5 py-3 transition-colors duration-200">
-            <div class="text-sm">
-                <a href="/tickets" class="font-medium text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors duration-200">Ver todos →</a>
-            </div>
-        </div>
-    </div>
+    </a>
 
     <!-- Novos -->
     <a href="/tickets?status=novo" class="bg-white dark:bg-gray-800 overflow-hidden shadow-md rounded-lg hover:shadow-lg hover:border-2 hover:border-blue-500 transition-all duration-200 cursor-pointer border-2 border-transparent">

@@ -11,118 +11,159 @@
             box-sizing: border-box;
         }
 
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0;
             background: white;
+            color: #1f2937;
+            line-height: 1.5;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #4f46e5;
-            padding-bottom: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #4f46e5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
         }
 
         .header h1 {
-            color: #1f2937;
-            margin-bottom: 10px;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 28px;
+            font-weight: bold;
         }
 
         .header p {
-            color: #6b7280;
-            font-size: 14px;
+            color: #e0e7ff;
+            font-size: 13px;
+            margin: 3px 0;
         }
 
         .kpis {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 25px;
         }
 
         .kpi-card {
-            border: 1px solid #e5e7eb;
-            padding: 15px;
-            border-radius: 8px;
+            border-left: 4px solid;
+            padding: 12px;
+            border-radius: 6px;
             text-align: center;
+            background: #f9fafb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
+        .kpi-card.indigo { border-left-color: #6366f1; }
+        .kpi-card.green { border-left-color: #10b981; }
+        .kpi-card.blue { border-left-color: #3b82f6; }
+        .kpi-card.purple { border-left-color: #8b5cf6; }
+        .kpi-card.yellow { border-left-color: #f59e0b; }
+
         .kpi-card h3 {
-            font-size: 12px;
+            font-size: 10px;
             color: #6b7280;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .kpi-card p {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
-            color: #1f2937;
         }
 
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             page-break-inside: avoid;
+            background: white;
         }
 
         .section h2 {
-            font-size: 18px;
+            font-size: 16px;
             color: #1f2937;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 10px;
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            background: linear-gradient(to right, #f3f4f6, white);
+            border-left: 4px solid #4f46e5;
+            border-radius: 4px;
+            font-weight: 600;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         table th {
-            background: #f3f4f6;
-            padding: 10px;
+            background: linear-gradient(to bottom, #6366f1, #4f46e5);
+            color: white;
+            padding: 10px 8px;
             text-align: left;
-            font-size: 12px;
-            color: #374151;
-            border: 1px solid #e5e7eb;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border: none;
         }
 
         table td {
-            padding: 8px 10px;
-            font-size: 12px;
+            padding: 8px;
+            font-size: 11px;
             border: 1px solid #e5e7eb;
+            background: white;
         }
 
         table tbody tr:nth-child(even) {
             background: #f9fafb;
         }
 
+        table tbody tr:hover {
+            background: #f3f4f6;
+        }
+
         .footer {
-            margin-top: 40px;
+            margin-top: 30px;
             text-align: center;
-            font-size: 11px;
+            font-size: 10px;
             color: #9ca3af;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            padding-top: 15px;
         }
 
         .print-btn {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #4f46e5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            z-index: 1000;
         }
 
         .print-btn:hover {
-            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         @media print {
@@ -137,31 +178,56 @@
             .page-break {
                 page-break-before: always;
             }
+
+            .header {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            table th {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
 
         .metric-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 20px;
         }
 
         .metric-box {
-            border: 1px solid #e5e7eb;
+            border-left: 4px solid;
             padding: 12px;
             border-radius: 6px;
+            background: #f9fafb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
+        .metric-box.sla-green { border-left-color: #10b981; }
+        .metric-box.sla-yellow { border-left-color: #f59e0b; }
+        .metric-box.sla-red { border-left-color: #ef4444; }
+        .metric-box.sla-purple { border-left-color: #8b5cf6; }
+
         .metric-box h4 {
-            font-size: 11px;
+            font-size: 10px;
             color: #6b7280;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .metric-box p {
             font-size: 20px;
             font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .metric-box small {
+            font-size: 9px;
+            color: #6b7280;
         }
 
         .green { color: #10b981; }
@@ -169,28 +235,38 @@
         .red { color: #ef4444; }
         .blue { color: #3b82f6; }
         .purple { color: #8b5cf6; }
+        .indigo { color: #6366f1; }
+
+        /* SVG Icons inline */
+        .icon-ticket {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
     </style>
 </head>
 <body>
     <button class="print-btn" onclick="window.print()">Imprimir / Salvar PDF</button>
 
     <div class="header">
-        <h1>Relatório de Tickets</h1>
+        <h1>📊 Relatório de Tickets</h1>
         <p>Período: <?= date('d/m/Y', strtotime($periodo_inicio)) ?> até <?= date('d/m/Y', strtotime($periodo_fim)) ?></p>
         <p>Gerado em: <?= date('d/m/Y H:i:s') ?></p>
     </div>
 
     <!-- KPIs Principais -->
     <div class="kpis">
-        <div class="kpi-card">
+        <div class="kpi-card indigo">
             <h3>Total de Tickets</h3>
-            <p><?= $kpis['total_tickets'] ?></p>
+            <p class="indigo"><?= $kpis['total_tickets'] ?></p>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card green">
             <h3>Resolvidos</h3>
             <p class="green"><?= $kpis['tickets_resolvidos'] ?></p>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card blue">
             <h3>Tempo Médio</h3>
             <p class="blue">
                 <?php
@@ -200,11 +276,11 @@
                 ?>
             </p>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card purple">
             <h3>Taxa Resolução</h3>
             <p class="purple"><?= number_format($kpis['taxa_resolucao'], 1) ?>%</p>
         </div>
-        <div class="kpi-card">
+        <div class="kpi-card yellow">
             <h3>Abertos Agora</h3>
             <p class="yellow"><?= $kpis['tickets_abertos_agora'] ?></p>
         </div>
@@ -212,23 +288,23 @@
 
     <!-- Métricas de SLA -->
     <div class="section">
-        <h2>Service Level Agreement (SLA)</h2>
+        <h2>⏱️ Service Level Agreement (SLA)</h2>
         <div class="metric-grid">
-            <div class="metric-box">
+            <div class="metric-box <?= $slaMetrics['sla_compliance_primeira_resposta'] >= 90 ? 'sla-green' : ($slaMetrics['sla_compliance_primeira_resposta'] >= 75 ? 'sla-yellow' : 'sla-red') ?>">
                 <h4>SLA Primeira Resposta</h4>
                 <p class="<?= $slaMetrics['sla_compliance_primeira_resposta'] >= 90 ? 'green' : ($slaMetrics['sla_compliance_primeira_resposta'] >= 75 ? 'yellow' : 'red') ?>">
                     <?= $slaMetrics['sla_compliance_primeira_resposta'] ?>%
                 </p>
                 <small><?= $slaMetrics['primeira_resposta_dentro_sla'] ?>/<?= $slaMetrics['total_tickets'] ?> tickets</small>
             </div>
-            <div class="metric-box">
+            <div class="metric-box <?= $slaMetrics['sla_compliance_resolucao'] >= 85 ? 'sla-green' : ($slaMetrics['sla_compliance_resolucao'] >= 70 ? 'sla-yellow' : 'sla-red') ?>">
                 <h4>SLA Resolução</h4>
                 <p class="<?= $slaMetrics['sla_compliance_resolucao'] >= 85 ? 'green' : ($slaMetrics['sla_compliance_resolucao'] >= 70 ? 'yellow' : 'red') ?>">
                     <?= $slaMetrics['sla_compliance_resolucao'] ?>%
                 </p>
                 <small><?= $slaMetrics['resolucao_dentro_sla'] ?>/<?= $slaMetrics['total_tickets'] ?> tickets</small>
             </div>
-            <div class="metric-box">
+            <div class="metric-box sla-purple">
                 <h4>FCR Rate</h4>
                 <p class="purple"><?= $fcrMetrics['fcr_rate'] ?>%</p>
                 <small><?= $fcrMetrics['resolvidos_primeiro_contato'] ?> no 1º contato</small>
@@ -239,7 +315,7 @@
     <!-- Performance por Agente -->
     <?php if (!empty($performanceAgentes)) : ?>
     <div class="section">
-        <h2>Performance por Agente</h2>
+        <h2>👥 Performance por Agente</h2>
         <table>
             <thead>
                 <tr>
@@ -277,7 +353,7 @@
 
     <!-- Distribuição por Status -->
     <div class="section">
-        <h2>Distribuição por Status</h2>
+        <h2>📊 Distribuição por Status</h2>
         <table>
             <thead>
                 <tr>
@@ -313,7 +389,7 @@
 
     <!-- Distribuição por Prioridade -->
     <div class="section">
-        <h2>Distribuição por Prioridade</h2>
+        <h2>⚡ Distribuição por Prioridade</h2>
         <table>
             <thead>
                 <tr>
@@ -340,7 +416,7 @@
 
     <!-- Distribuição por Categoria -->
     <div class="section">
-        <h2>Distribuição por Categoria</h2>
+        <h2>🏷️ Distribuição por Categoria</h2>
         <table>
             <thead>
                 <tr>
