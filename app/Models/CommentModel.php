@@ -53,6 +53,44 @@ class CommentModel extends Model
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
+    // Callbacks
+    protected $allowCallbacks = true;
+    protected $afterInsert = ['atualizarPrimeiraResposta'];
+
+    /**
+     * Atualiza primeira_resposta_em quando agente/admin comenta pela primeira vez
+     */
+    protected function atualizarPrimeiraResposta(array $data)
+    {
+        // Se não tiver ticket_id ou usuario_id, retornar
+        if (!isset($data['data']['ticket_id']) || !isset($data['data']['usuario_id'])) {
+            return $data;
+        }
+
+        $ticketId = $data['data']['ticket_id'];
+        $usuarioId = $data['data']['usuario_id'];
+
+        // Verificar se usuário é agente ou admin
+        $db = \Config\Database::connect();
+        $usuario = $db->table('usuarios')->where('id', $usuarioId)->get()->getRowArray();
+
+        if (!$usuario || $usuario['funcao'] === 'cliente') {
+            return $data;
+        }
+
+        // Verificar se ticket já tem primeira_resposta_em
+        $ticket = $db->table('tickets')->where('id', $ticketId)->get()->getRowArray();
+
+        if ($ticket && empty($ticket['primeira_resposta_em'])) {
+            // Atualizar primeira_resposta_em para NOW()
+            $db->table('tickets')
+                ->where('id', $ticketId)
+                ->update(['primeira_resposta_em' => date('Y-m-d H:i:s')]);
+        }
+
+        return $data;
+    }
+
     /**
      * Buscar comentários de um ticket com dados do usuário
      */

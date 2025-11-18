@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\TicketModel;
 use App\Models\CategoryModel;
 use App\Models\PriorityModel;
+use App\Models\RelatorioModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Dashboard extends BaseController
@@ -13,12 +14,14 @@ class Dashboard extends BaseController
     protected $ticketModel;
     protected $categoryModel;
     protected $priorityModel;
+    protected $relatorioModel;
 
     public function __construct()
     {
         $this->ticketModel = new TicketModel();
         $this->categoryModel = new CategoryModel();
         $this->priorityModel = new PriorityModel();
+        $this->relatorioModel = new RelatorioModel();
     }
 
     public function index()
@@ -111,6 +114,9 @@ class Dashboard extends BaseController
             ];
         }
 
+        // Tickets próximos ao vencimento do SLA (crítico)
+        $ticketsProximosVencimento = $this->relatorioModel->getTicketsProximosVencimento(5);
+
         $data = [
             'title' => 'Dashboard',
             'user' => $user,
@@ -118,6 +124,7 @@ class Dashboard extends BaseController
             'ticketsRecentes' => $ticketsRecentes,
             'ticketsPorPrioridade' => $ticketsPorPrioridade,
             'ticketsPorCategoria' => $ticketsPorCategoria,
+            'ticketsProximosVencimento' => $ticketsProximosVencimento,
         ];
 
         return view('dashboard/index', $data);

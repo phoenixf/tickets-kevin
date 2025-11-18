@@ -38,7 +38,7 @@ class Relatorios extends BaseController
 
         // 3. Receber filtros via GET
         $periodo_inicio = $this->request->getGet('periodo_inicio')
-            ?? date('Y-m-d', strtotime('-7 days'));
+            ?? date('Y-m-d', strtotime('-30 days'));
         $periodo_fim = $this->request->getGet('periodo_fim')
             ?? date('Y-m-d');
         $agente_id = $this->request->getGet('agente_id') ?? null;
@@ -118,5 +118,72 @@ class Relatorios extends BaseController
         ];
 
         return view('relatorios/index', $data);
+    }
+
+    /**
+     * Exportar relatório em PDF (usando print do navegador)
+     */
+    public function exportarPdf()
+    {
+        // 1. Verificar se usuário está autenticado
+        if (!auth()->loggedIn()) {
+            return redirect()->to('/login');
+        }
+
+        $user = auth()->user();
+
+        // 2. Bloquear clientes
+        if ($user->funcao === 'cliente') {
+            return redirect()->to('/dashboard')
+                ->with('error', 'Você não tem permissão para acessar relatórios.');
+        }
+
+        // 3. Receber filtros (mesma lógica do index)
+        $periodo_inicio = $this->request->getGet('periodo_inicio')
+            ?? date('Y-m-d', strtotime('-30 days'));
+        $periodo_fim = $this->request->getGet('periodo_fim')
+            ?? date('Y-m-d');
+        $agente_id = $this->request->getGet('agente_id') ?? null;
+        $categoria_id = $this->request->getGet('categoria_id') ?? null;
+        $prioridade_id = $this->request->getGet('prioridade_id') ?? null;
+
+        $filtros = [
+            'periodo_inicio' => $periodo_inicio . ' 00:00:00',
+            'periodo_fim' => $periodo_fim . ' 23:59:59',
+        ];
+
+        if (!empty($agente_id)) {
+            $filtros['agente_id'] = $agente_id;
+        }
+        if (!empty($categoria_id)) {
+            $filtros['categoria_id'] = $categoria_id;
+        }
+        if (!empty($prioridade_id)) {
+            $filtros['prioridade_id'] = $prioridade_id;
+        }
+
+        // 4. Buscar dados
+        $kpis = $this->relatorioModel->getKPIs($filtros);
+        $performanceAgentes = $this->relatorioModel->getPerformanceAgentes($filtros);
+        $slaMetrics = $this->relatorioModel->getSLAMetrics($filtros);
+        $distribuicaoStatus = $this->relatorioModel->getDistribuicaoPorStatus($filtros);
+        $distribuicaoPrioridade = $this->relatorioModel->getDistribuicaoPorPrioridade($filtros);
+        $distribuicaoCategoria = $this->relatorioModel->getDistribuicaoPorCategoria($filtros);
+        $fcrMetrics = $this->relatorioModel->getFirstContactResolution($filtros);
+
+        // 5. Passar para view de PDF
+        $data = [
+            'kpis' => $kpis,
+            'performanceAgentes' => $performanceAgentes,
+            'slaMetrics' => $slaMetrics,
+            'distribuicaoStatus' => $distribuicaoStatus,
+            'distribuicaoPrioridade' => $distribuicaoPrioridade,
+            'distribuicaoCategoria' => $distribuicaoCategoria,
+            'fcrMetrics' => $fcrMetrics,
+            'periodo_inicio' => $periodo_inicio,
+            'periodo_fim' => $periodo_fim,
+        ];
+
+        return view('relatorios/pdf', $data);
     }
 }

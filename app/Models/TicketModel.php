@@ -20,7 +20,9 @@ class TicketModel extends Model
         'categoria_id',
         'prioridade_id',
         'status',
-        'data_vencimento'
+        'data_vencimento',
+        'primeira_resposta_em',
+        'resolvido_em'
     ];
 
     protected bool $allowEmptyInserts = false;
@@ -86,12 +88,48 @@ class TicketModel extends Model
     protected $allowCallbacks = true;
     protected $beforeInsert   = [];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
+    protected $beforeUpdate   = ['atualizarResolvidoEm'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    /**
+     * Atualiza resolvido_em quando status muda para "resolvido" ou "fechado"
+     */
+    protected function atualizarResolvidoEm(array $data)
+    {
+        // Se não tiver ID ou status, retornar
+        if (!isset($data['id']) || !isset($data['data']['status'])) {
+            return $data;
+        }
+
+        $ticketId = is_array($data['id']) ? $data['id'][0] : $data['id'];
+        $novoStatus = $data['data']['status'];
+
+        // Buscar status antigo
+        $db = \Config\Database::connect();
+        $ticket = $db->table('tickets')->where('id', $ticketId)->get()->getRowArray();
+
+        if (!$ticket) {
+            return $data;
+        }
+
+        $statusAntigo = $ticket['status'];
+
+        // Se mudou para resolvido/fechado e não tinha resolvido_em, atualizar
+        if (in_array($novoStatus, ['resolvido', 'fechado']) && empty($ticket['resolvido_em'])) {
+            $data['data']['resolvido_em'] = date('Y-m-d H:i:s');
+        }
+
+        // Se estava resolvido/fechado e mudou para outro status, limpar resolvido_em
+        if (in_array($statusAntigo, ['resolvido', 'fechado']) && !in_array($novoStatus, ['resolvido', 'fechado'])) {
+            $data['data']['resolvido_em'] = null;
+        }
+
+        return $data;
+    }
 
     /**
      * Buscar ticket com todos os relacionamentos
@@ -128,12 +166,18 @@ class TicketModel extends Model
                 responsavel.nome as responsavel_nome,
                 categorias.nome as categoria_nome,
                 prioridades.nome as prioridade_nome,
-                prioridades.cor as prioridade_cor
+                prioridades.cor as prioridade_cor,
+                COALESCE(COUNT(comentarios.id), 0) as total_mensagens,
+                GREATEST(
+                    COALESCE(tickets.atualizado_em, tickets.criado_em),
+                    COALESCE(MAX(comentarios.criado_em), tickets.criado_em)
+                ) as ultima_atividade
             ')
             ->join('usuarios', 'usuarios.id = tickets.usuario_id', 'left')
             ->join('usuarios as responsavel', 'responsavel.id = tickets.responsavel_id', 'left')
             ->join('categorias', 'categorias.id = tickets.categoria_id', 'left')
-            ->join('prioridades', 'prioridades.id = tickets.prioridade_id', 'left');
+            ->join('prioridades', 'prioridades.id = tickets.prioridade_id', 'left')
+            ->join('comentarios', 'comentarios.ticket_id = tickets.id', 'left');
 
         // Aplicar filtros
         if (!empty($filtros['status'])) {
@@ -163,7 +207,8 @@ class TicketModel extends Model
                 ->groupEnd();
         }
 
-        return $builder->orderBy('tickets.criado_em', 'DESC')
+        return $builder->groupBy('tickets.id')
+            ->orderBy('tickets.criado_em', 'DESC')
             ->limit($limite, $offset)
             ->findAll();
     }
@@ -192,5 +237,37 @@ class TicketModel extends Model
     public function ticketsDoResponsavel($responsavelId, $limite = 10)
     {
         return $this->listarTickets(['responsavel_id' => $responsavelId], $limite);
+    }
+
+    /**
+     * Buscar um ticket completo com contagem de mensagens e última atividade
+     */
+    public function getTicketComAtividade($ticketId)
+    {
+        return $this->select('
+                tickets.*,
+                usuarios.nome as usuario_nome,
+                usuarios.email as usuario_email,
+                responsavel.nome as responsavel_nome,
+                responsavel.email as responsavel_email,
+                categorias.nome as categoria_nome,
+                categorias.cor as categoria_cor,
+                prioridades.nome as prioridade_nome,
+                prioridades.cor as prioridade_cor,
+                prioridades.nivel as prioridade_nivel,
+                COALESCE(COUNT(comentarios.id), 0) as total_mensagens,
+                GREATEST(
+                    COALESCE(tickets.atualizado_em, tickets.criado_em),
+                    COALESCE(MAX(comentarios.criado_em), tickets.criado_em)
+                ) as ultima_atividade
+            ')
+            ->join('usuarios', 'usuarios.id = tickets.usuario_id', 'left')
+            ->join('usuarios as responsavel', 'responsavel.id = tickets.responsavel_id', 'left')
+            ->join('categorias', 'categorias.id = tickets.categoria_id', 'left')
+            ->join('prioridades', 'prioridades.id = tickets.prioridade_id', 'left')
+            ->join('comentarios', 'comentarios.ticket_id = tickets.id', 'left')
+            ->where('tickets.id', $ticketId)
+            ->groupBy('tickets.id')
+            ->first();
     }
 }
