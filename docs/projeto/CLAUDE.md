@@ -55,12 +55,12 @@ Sistema moderno de gestão de tickets (help desk) em PHP com CodeIgniter 4, foca
   - 7 usuários (1 admin, 3 agentes, 3 clientes)
 
 ### ✅ Documentação
-- `docs/PLANEJAMENTO.md` - Arquitetura completa (800+ linhas)
-- `docs/BANCO_DE_DADOS.md` - Schema, queries, diagramas
-- `docs/tickets.md` - Requisitos originais
+- `docs/features/PLANEJAMENTO.md` - Arquitetura completa (800+ linhas)
+- `docs/desenvolvimento/BANCO_DE_DADOS.md` - Schema, queries, diagramas
+- `docs/features/TICKETS.md` - Requisitos originais
 - `README.md` - Documentação principal
-- `CHANGELOG.md` - Histórico de mudanças
-- `CLAUDE.md` - Este arquivo
+- `docs/projeto/CHANGELOG.md` - Histórico de mudanças
+- `docs/projeto/CLAUDE.md` - Este arquivo
 
 ### ✅ Versionamento
 - Git inicializado
@@ -565,10 +565,18 @@ composer require vendor/package
 ├── public/
 │   ├── uploads/             # Para anexos
 │   └── index.php
-├── docs/                    # ⚠️ Padrão para documentação
-│   ├── PLANEJAMENTO.md
-│   ├── BANCO_DE_DADOS.md
-│   └── tickets.md
+├── docs/                    # ⚠️ Toda documentação aqui
+│   ├── projeto/              # Contexto geral
+│   │   ├── CLAUDE.md
+│   │   └── CHANGELOG.md
+│   ├── desenvolvimento/      # Guias técnicos
+│   │   ├── SETUP_INSTRUCTIONS.md
+│   │   ├── BANCO_DE_DADOS.md
+│   │   └── TESTING.md
+│   └── features/            # Documentação de features
+│       ├── PLANEJAMENTO.md
+│       ├── TICKETS.md
+│       └── RELATORIOS.md
 ├── tests/                   # CRIAR testes
 │   ├── database/
 │   ├── unit/

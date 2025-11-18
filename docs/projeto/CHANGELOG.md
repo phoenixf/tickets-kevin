@@ -64,7 +64,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
   - Base URL configurada para http://localhost:8080
 
 - **Documentação**
-  - `docs/PLANEJAMENTO.md` - Planejamento completo do sistema (800+ linhas)
+  - `docs/features/PLANEJAMENTO.md` - Planejamento completo do sistema (800+ linhas)
     - Visão geral e objetivos
     - Stack tecnológica detalhada
     - Análise de requisitos originais
@@ -77,7 +77,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
     - Métricas de sucesso
     - Medidas de segurança
 
-  - `docs/BANCO_DE_DADOS.md` - Documentação do banco de dados
+  - `docs/desenvolvimento/BANCO_DE_DADOS.md` - Documentação do banco de dados
     - Informações gerais (charset, collation)
     - Estrutura detalhada das 7 tabelas
     - Diagrama de relacionamentos (ER)
@@ -86,7 +86,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
     - Comandos úteis (migrations, seeders, backup)
     - Observações importantes sobre segurança
 
-  - `docs/tickets.md` - Requisitos originais do sistema
+  - `docs/features/TICKETS.md` - Requisitos originais do sistema
 
   - `README.md` - Documentação principal
     - Badges do projeto

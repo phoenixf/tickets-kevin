@@ -167,11 +167,11 @@ chmod -R 777 writable/
 
 ## 📚 Documentação
 
-- **[README.md](README.md)** - Documentação principal do projeto
-- **[CLAUDE.md](CLAUDE.md)** - Guia para desenvolvimento com Claude Code
-- **[CHANGELOG.md](CHANGELOG.md)** - Histórico de mudanças
-- **[docs/PLANEJAMENTO.md](docs/PLANEJAMENTO.md)** - Planejamento completo
-- **[docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)** - Documentação do banco
+- **[README.md](../../README.md)** - Documentação principal do projeto
+- **[CLAUDE.md](../projeto/CLAUDE.md)** - Guia para desenvolvimento com Claude Code
+- **[CHANGELOG.md](../projeto/CHANGELOG.md)** - Histórico de mudanças
+- **[PLANEJAMENTO.md](../features/PLANEJAMENTO.md)** - Planejamento completo
+- **[BANCO_DE_DADOS.md](./BANCO_DE_DADOS.md)** - Documentação do banco
 
 ---
 

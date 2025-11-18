@@ -222,10 +222,10 @@ encryption.key = hex2bin:da6add063f2c28d872493ce45eb63ffb9844202a2d30d23d52b9e36
 
 - **[README.md](README.md)** - Documentação principal
 - **[CLAUDE.md](CLAUDE.md)** - Guia de desenvolvimento
-- **[CHANGELOG.md](CHANGELOG.md)** - Histórico de versões
-- **[SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md)** - Guia de instalação
-- **[docs/PLANEJAMENTO.md](docs/PLANEJAMENTO.md)** - Planejamento completo
-- **[docs/BANCO_DE_DADOS.md](docs/BANCO_DE_DADOS.md)** - Documentação do BD
+- **[CHANGELOG.md](../projeto/CHANGELOG.md)** - Histórico de versões
+- **[SETUP_INSTRUCTIONS.md](./SETUP_INSTRUCTIONS.md)** - Guia de instalação
+- **[PLANEJAMENTO.md](../features/PLANEJAMENTO.md)** - Planejamento completo
+- **[BANCO_DE_DADOS.md](./BANCO_DE_DADOS.md)** - Documentação do BD
 
 ---
 
