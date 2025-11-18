@@ -69,6 +69,11 @@ class Relatorios extends BaseController
         $distribuicaoPrioridade = $this->relatorioModel->getDistribuicaoPorPrioridade($filtros);
         $distribuicaoCategoria = $this->relatorioModel->getDistribuicaoPorCategoria($filtros);
 
+        // Métricas de SLA
+        $slaMetrics = $this->relatorioModel->getSLAMetrics($filtros);
+        $ticketsProximosVencimento = $this->relatorioModel->getTicketsProximosVencimento(10);
+        $fcrMetrics = $this->relatorioModel->getFirstContactResolution($filtros);
+
         // 5. Buscar listas para filtros
         // Lista de agentes (apenas admin/agente função)
         $db = \Config\Database::connect();
@@ -97,6 +102,9 @@ class Relatorios extends BaseController
             'distribuicaoStatus' => $distribuicaoStatus,
             'distribuicaoPrioridade' => $distribuicaoPrioridade,
             'distribuicaoCategoria' => $distribuicaoCategoria,
+            'slaMetrics' => $slaMetrics,
+            'ticketsProximosVencimento' => $ticketsProximosVencimento,
+            'fcrMetrics' => $fcrMetrics,
             'filtros' => [
                 'periodo_inicio' => $periodo_inicio,
                 'periodo_fim' => $periodo_fim,

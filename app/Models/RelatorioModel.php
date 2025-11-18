@@ -462,4 +462,228 @@ class RelatorioModel extends Model
 
         return $resultados;
     }
+
+    /**
+     * Retorna métricas de SLA
+     *
+     * @param array $filtros [periodo_inicio, periodo_fim, agente_id, categoria_id, prioridade_id]
+     * @return array
+     */
+    public function getSLAMetrics($filtros = [])
+    {
+        $db = \Config\Database::connect();
+
+        // Query para calcular compliance de SLA
+        $sql = "
+            SELECT
+                COUNT(tickets.id) as total_tickets,
+                SUM(CASE
+                    WHEN tickets.primeira_resposta_em IS NOT NULL
+                    AND TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.primeira_resposta_em) <= sla.tempo_primeira_resposta_minutos
+                    THEN 1 ELSE 0
+                END) as primeira_resposta_dentro_sla,
+                SUM(CASE
+                    WHEN tickets.resolvido_em IS NOT NULL
+                    AND TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.resolvido_em) <= sla.tempo_resolucao_minutos
+                    THEN 1 ELSE 0
+                END) as resolucao_dentro_sla,
+                AVG(CASE
+                    WHEN tickets.primeira_resposta_em IS NOT NULL
+                    THEN TIMESTAMPDIFF(MINUTE, tickets.criado_em, tickets.primeira_resposta_em)
+                    ELSE NULL
+                END) as tempo_medio_primeira_resposta,
+                COUNT(CASE WHEN tickets.primeira_resposta_em IS NULL AND tickets.status NOT IN ('resolvido', 'fechado') THEN 1 END) as sem_primeira_resposta
+            FROM tickets
+            LEFT JOIN sla_configuracoes sla ON sla.prioridade_id = tickets.prioridade_id
+        ";
+
+        $where_conditions = [];
+        $params = [];
+
+        if (!empty($filtros['periodo_inicio'])) {
+            $where_conditions[] = "tickets.criado_em >= ?";
+            $params[] = $filtros['periodo_inicio'];
+        }
+        if (!empty($filtros['periodo_fim'])) {
+            $where_conditions[] = "tickets.criado_em <= ?";
+            $params[] = $filtros['periodo_fim'];
+        }
+        if (!empty($filtros['agente_id'])) {
+            $where_conditions[] = "tickets.responsavel_id = ?";
+            $params[] = $filtros['agente_id'];
+        }
+        if (!empty($filtros['categoria_id'])) {
+            $where_conditions[] = "tickets.categoria_id = ?";
+            $params[] = $filtros['categoria_id'];
+        }
+        if (!empty($filtros['prioridade_id'])) {
+            $where_conditions[] = "tickets.prioridade_id = ?";
+            $params[] = $filtros['prioridade_id'];
+        }
+
+        if (!empty($where_conditions)) {
+            $sql .= " WHERE " . implode(' AND ', $where_conditions);
+        }
+
+        $result = $db->query($sql, $params)->getRowArray();
+
+        // Calcular percentuais
+        $total = $result['total_tickets'] ?: 1;
+        $sla_compliance_primeira_resposta = round(($result['primeira_resposta_dentro_sla'] / $total) * 100, 1);
+        $sla_compliance_resolucao = round(($result['resolucao_dentro_sla'] / $total) * 100, 1);
+
+        return [
+            'total_tickets' => (int) $result['total_tickets'],
+            'primeira_resposta_dentro_sla' => (int) $result['primeira_resposta_dentro_sla'],
+            'resolucao_dentro_sla' => (int) $result['resolucao_dentro_sla'],
+            'sla_compliance_primeira_resposta' => $sla_compliance_primeira_resposta,
+            'sla_compliance_resolucao' => $sla_compliance_resolucao,
+            'tempo_medio_primeira_resposta' => round($result['tempo_medio_primeira_resposta'] ?: 0, 2),
+            'sem_primeira_resposta' => (int) $result['sem_primeira_resposta']
+        ];
+    }
+
+    /**
+     * Retorna tickets próximos ao vencimento do SLA (crítico para ação imediata)
+     *
+     * @param int $limit
+     * @return array
+     */
+    public function getTicketsProximosVencimento($limit = 10)
+    {
+        $db = \Config\Database::connect();
+
+        $sql = "
+            SELECT
+                tickets.id,
+                tickets.titulo,
+                tickets.status,
+                tickets.criado_em,
+                tickets.primeira_resposta_em,
+                prioridades.nome as prioridade_nome,
+                prioridades.cor as prioridade_cor,
+                categorias.nome as categoria_nome,
+                usuarios.nome as responsavel_nome,
+                sla.tempo_primeira_resposta_minutos,
+                sla.tempo_resolucao_minutos,
+                CASE
+                    WHEN tickets.primeira_resposta_em IS NULL
+                    THEN TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW())
+                    ELSE NULL
+                END as minutos_sem_resposta,
+                CASE
+                    WHEN tickets.resolvido_em IS NULL AND tickets.status NOT IN ('resolvido', 'fechado')
+                    THEN TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW())
+                    ELSE NULL
+                END as minutos_aberto,
+                CASE
+                    WHEN tickets.primeira_resposta_em IS NULL
+                    THEN GREATEST(0, CAST(sla.tempo_primeira_resposta_minutos AS SIGNED) - TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW()))
+                    ELSE NULL
+                END as minutos_ate_vencer_primeira_resposta,
+                CASE
+                    WHEN tickets.resolvido_em IS NULL AND tickets.status NOT IN ('resolvido', 'fechado')
+                    THEN GREATEST(0, CAST(sla.tempo_resolucao_minutos AS SIGNED) - TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW()))
+                    ELSE NULL
+                END as minutos_ate_vencer_resolucao
+            FROM tickets
+            LEFT JOIN prioridades ON prioridades.id = tickets.prioridade_id
+            LEFT JOIN categorias ON categorias.id = tickets.categoria_id
+            LEFT JOIN usuarios ON usuarios.id = tickets.responsavel_id
+            LEFT JOIN sla_configuracoes sla ON sla.prioridade_id = tickets.prioridade_id
+            WHERE tickets.status NOT IN ('resolvido', 'fechado')
+            AND (
+                (tickets.primeira_resposta_em IS NULL AND TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW()) > CAST(sla.tempo_primeira_resposta_minutos * 0.7 AS SIGNED))
+                OR
+                (tickets.resolvido_em IS NULL AND TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW()) > CAST(sla.tempo_resolucao_minutos * 0.7 AS SIGNED))
+            )
+            ORDER BY
+                CASE
+                    WHEN tickets.primeira_resposta_em IS NULL
+                    THEN GREATEST(0, CAST(sla.tempo_primeira_resposta_minutos AS SIGNED) - TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW()))
+                    ELSE GREATEST(0, CAST(sla.tempo_resolucao_minutos AS SIGNED) - TIMESTAMPDIFF(MINUTE, tickets.criado_em, NOW()))
+                END ASC
+            LIMIT ?
+        ";
+
+        $result = $db->query($sql, [$limit])->getResultArray();
+
+        // Processar resultados
+        foreach ($result as &$ticket) {
+            $ticket['id'] = (int) $ticket['id'];
+            $ticket['minutos_sem_resposta'] = (int) $ticket['minutos_sem_resposta'];
+            $ticket['minutos_aberto'] = (int) $ticket['minutos_aberto'];
+            $ticket['minutos_ate_vencer_primeira_resposta'] = (int) $ticket['minutos_ate_vencer_primeira_resposta'];
+            $ticket['minutos_ate_vencer_resolucao'] = (int) $ticket['minutos_ate_vencer_resolucao'];
+
+            // Determinar urgência (vermelho se < 0, amarelo se < 30% do tempo)
+            $ticket['urgencia'] = 'normal';
+            if ($ticket['minutos_ate_vencer_primeira_resposta'] < 0 || $ticket['minutos_ate_vencer_resolucao'] < 0) {
+                $ticket['urgencia'] = 'vencido';
+            } elseif ($ticket['minutos_ate_vencer_primeira_resposta'] < ($ticket['tempo_primeira_resposta_minutos'] * 0.3)) {
+                $ticket['urgencia'] = 'critico';
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Retorna First Contact Resolution (FCR)
+     *
+     * @param array $filtros
+     * @return array
+     */
+    public function getFirstContactResolution($filtros = [])
+    {
+        $db = \Config\Database::connect();
+
+        // Tickets resolvidos com apenas 1 comentário (do agente) = FCR
+        $sql = "
+            SELECT
+                COUNT(DISTINCT tickets.id) as total_resolvidos,
+                COUNT(DISTINCT CASE
+                    WHEN comentarios_count.total <= 1 THEN tickets.id
+                END) as resolvidos_primeiro_contato
+            FROM tickets
+            LEFT JOIN (
+                SELECT ticket_id, COUNT(*) as total
+                FROM comentarios
+                WHERE usuario_id != (SELECT usuario_id FROM tickets WHERE id = comentarios.ticket_id)
+                GROUP BY ticket_id
+            ) comentarios_count ON comentarios_count.ticket_id = tickets.id
+            WHERE tickets.status IN ('resolvido', 'fechado')
+        ";
+
+        $where_conditions = [];
+        $params = [];
+
+        if (!empty($filtros['periodo_inicio'])) {
+            $where_conditions[] = "tickets.criado_em >= ?";
+            $params[] = $filtros['periodo_inicio'];
+        }
+        if (!empty($filtros['periodo_fim'])) {
+            $where_conditions[] = "tickets.criado_em <= ?";
+            $params[] = $filtros['periodo_fim'];
+        }
+        if (!empty($filtros['agente_id'])) {
+            $where_conditions[] = "tickets.responsavel_id = ?";
+            $params[] = $filtros['agente_id'];
+        }
+
+        if (!empty($where_conditions)) {
+            $sql .= " AND " . implode(' AND ', $where_conditions);
+        }
+
+        $result = $db->query($sql, $params)->getRowArray();
+
+        $total = $result['total_resolvidos'] ?: 1;
+        $fcr_rate = round(($result['resolvidos_primeiro_contato'] / $total) * 100, 1);
+
+        return [
+            'total_resolvidos' => (int) $result['total_resolvidos'],
+            'resolvidos_primeiro_contato' => (int) $result['resolvidos_primeiro_contato'],
+            'fcr_rate' => $fcr_rate
+        ];
+    }
 }

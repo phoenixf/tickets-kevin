@@ -680,6 +680,38 @@ Roda tudo em PARALELO em uma única chamada!
 
 ---
 
+## 🧪 Credenciais de Teste
+
+**IMPORTANTE**: Use SEMPRE estas credenciais nos testes Playwright!
+
+### Usuários do Sistema
+
+**Admin:**
+- **Email:** `admin@tickets.com`
+- **Senha:** `123456`
+- **Função:** admin
+- **ID:** 1
+
+**Agentes:**
+- **Email:** `agente1@tickets.com` | Senha: `123456` | ID: 2
+- **Email:** `agente2@tickets.com` | Senha: `123456` | ID: 3
+- **Email:** `agente3@tickets.com` | Senha: `123456` | ID: 4
+
+**Clientes:**
+- **Email:** `cliente1@tickets.com` | Senha: `123456` | ID: 5
+- **Email:** `cliente2@tickets.com` | Senha: `123456` | ID: 6
+- **Email:** `cliente3@tickets.com` | Senha: `123456` | ID: 7
+
+### Template de Login para Testes Playwright
+
+```javascript
+// LOGIN CORRETO - SEMPRE USAR!
+await page.type('input[name="email"]', 'admin@tickets.com', { delay: 60 });
+await page.type('input[name="password"]', '123456', { delay: 65 });
+```
+
+---
+
 ## 🔧 Troubleshooting
 
 ### MySQL não inicia

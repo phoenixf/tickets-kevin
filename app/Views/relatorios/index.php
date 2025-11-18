@@ -14,10 +14,29 @@
         </button>
     </div>
 
-    <!-- Filtros -->
+    <!-- Quick Filters (Filtros Rápidos) -->
+    <div class="flex gap-2 mb-4 flex-wrap">
+        <button onclick="aplicarFiltroRapido('hoje')" class="quick-filter-btn px-4 py-2 text-sm font-medium rounded-lg border-2 border-transparent bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200">
+            Hoje
+        </button>
+        <button onclick="aplicarFiltroRapido('ontem')" class="quick-filter-btn px-4 py-2 text-sm font-medium rounded-lg border-2 border-transparent bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200">
+            Ontem
+        </button>
+        <button onclick="aplicarFiltroRapido('ultimos7')" class="quick-filter-btn px-4 py-2 text-sm font-medium rounded-lg border-2 border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 transition-all duration-200">
+            Últimos 7 dias
+        </button>
+        <button onclick="aplicarFiltroRapido('ultimos30')" class="quick-filter-btn px-4 py-2 text-sm font-medium rounded-lg border-2 border-transparent bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200">
+            Últimos 30 dias
+        </button>
+        <button onclick="aplicarFiltroRapido('esteAno')" class="quick-filter-btn px-4 py-2 text-sm font-medium rounded-lg border-2 border-transparent bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-200">
+            Este Ano
+        </button>
+    </div>
+
+    <!-- Filtros Avançados -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 transition-colors duration-200">
-        <form method="GET" action="/relatorios" class="flex items-center gap-3 flex-wrap">
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Filtrar por:</span>
+        <form method="GET" action="/relatorios" id="form-filtros" class="flex items-center gap-3 flex-wrap">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Filtros:</span>
 
             <!-- Período -->
             <div class="flex items-center gap-2">
@@ -184,6 +203,121 @@
         </div>
     </div>
 
+</div>
+
+<!-- SLA Metrics + Tickets Próximos ao Vencimento (CRÍTICO!) -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+
+    <!-- Cards de SLA -->
+    <div class="xl:col-span-2">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">⏱️ Service Level Agreement (SLA)</h2>
+
+        <!-- KPIs de SLA -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <!-- SLA Primeira Resposta -->
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-5 border-l-4 <?= $slaMetrics['sla_compliance_primeira_resposta'] >= 90 ? 'border-green-500' : ($slaMetrics['sla_compliance_primeira_resposta'] >= 75 ? 'border-yellow-500' : 'border-red-500') ?> transition-colors duration-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">SLA Primeira Resposta</dt>
+                        <dd class="mt-1 text-3xl font-bold <?= $slaMetrics['sla_compliance_primeira_resposta'] >= 90 ? 'text-green-600 dark:text-green-400' : ($slaMetrics['sla_compliance_primeira_resposta'] >= 75 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400') ?>">
+                            <?= $slaMetrics['sla_compliance_primeira_resposta'] ?>%
+                        </dd>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1"><?= $slaMetrics['primeira_resposta_dentro_sla'] ?>/<?= $slaMetrics['total_tickets'] ?> dentro do prazo</p>
+                    </div>
+                    <svg class="w-12 h-12 <?= $slaMetrics['sla_compliance_primeira_resposta'] >= 90 ? 'text-green-500' : ($slaMetrics['sla_compliance_primeira_resposta'] >= 75 ? 'text-yellow-500' : 'text-red-500') ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- SLA Resolução -->
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-5 border-l-4 <?= $slaMetrics['sla_compliance_resolucao'] >= 85 ? 'border-green-500' : ($slaMetrics['sla_compliance_resolucao'] >= 70 ? 'border-yellow-500' : 'border-red-500') ?> transition-colors duration-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">SLA Resolução</dt>
+                        <dd class="mt-1 text-3xl font-bold <?= $slaMetrics['sla_compliance_resolucao'] >= 85 ? 'text-green-600 dark:text-green-400' : ($slaMetrics['sla_compliance_resolucao'] >= 70 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400') ?>">
+                            <?= $slaMetrics['sla_compliance_resolucao'] ?>%
+                        </dd>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1"><?= $slaMetrics['resolucao_dentro_sla'] ?>/<?= $slaMetrics['total_tickets'] ?> resolvidos no prazo</p>
+                    </div>
+                    <svg class="w-12 h-12 <?= $slaMetrics['sla_compliance_resolucao'] >= 85 ? 'text-green-500' : ($slaMetrics['sla_compliance_resolucao'] >= 70 ? 'text-yellow-500' : 'text-red-500') ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- FCR (First Contact Resolution) -->
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-5 border-l-4 border-purple-500 transition-colors duration-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">FCR Rate</dt>
+                        <dd class="mt-1 text-3xl font-bold text-purple-600 dark:text-purple-400"><?= $fcrMetrics['fcr_rate'] ?>%</dd>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1"><?= $fcrMetrics['resolvidos_primeiro_contato'] ?> resolvidos no 1º contato</p>
+                    </div>
+                    <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela CRÍTICA: Tickets Próximos ao Vencimento -->
+    <div class="xl:col-span-1">
+        <div class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 shadow-lg rounded-lg p-5 border-2 border-red-500 transition-colors duration-200">
+            <div class="flex items-center mb-3">
+                <svg class="w-6 h-6 text-red-600 dark:text-red-400 mr-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <h3 class="text-lg font-bold text-red-900 dark:text-red-100">Ação Imediata!</h3>
+            </div>
+
+            <p class="text-sm text-red-800 dark:text-red-200 mb-4">Tickets próximos ao vencimento do SLA (70%+):</p>
+
+            <?php if (!empty($ticketsProximosVencimento)) : ?>
+                <div class="space-y-2 max-h-96 overflow-y-auto">
+                    <?php foreach ($ticketsProximosVencimento as $ticket) : ?>
+                        <a href="/tickets/<?= $ticket['id'] ?>" class="block bg-white dark:bg-gray-800 rounded-lg p-3 border-l-4 <?= $ticket['urgencia'] === 'vencido' ? 'border-red-600' : 'border-yellow-500' ?> hover:shadow-md transition-all duration-200">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-xs font-semibold text-gray-900 dark:text-white truncate" title="<?= esc($ticket['titulo']) ?>">
+                                        #<?= $ticket['id'] ?> - <?= esc($ticket['titulo']) ?>
+                                    </p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" style="background-color: <?= $ticket['prioridade_cor'] ?>20; color: <?= $ticket['prioridade_cor'] ?>;">
+                                            <?= esc($ticket['prioridade_nome']) ?>
+                                        </span>
+                                        <?php if ($ticket['minutos_ate_vencer_primeira_resposta'] !== null && $ticket['minutos_ate_vencer_primeira_resposta'] < 0) : ?>
+                                            <span class="text-xs font-bold text-red-600 dark:text-red-400">VENCIDO!</span>
+                                        <?php elseif ($ticket['minutos_ate_vencer_primeira_resposta'] !== null) : ?>
+                                            <span class="text-xs text-orange-600 dark:text-orange-400">
+                                                <?php
+                                                $horas = floor(abs($ticket['minutos_ate_vencer_primeira_resposta']) / 60);
+                                                $mins = abs($ticket['minutos_ate_vencer_primeira_resposta']) % 60;
+                                                echo $horas . 'h ' . $mins . 'm restantes';
+                                                ?>
+                                            </span>
+                                        <?php endif ?>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </a>
+                    <?php endforeach ?>
+                </div>
+            <?php else : ?>
+                <div class="bg-green-100 dark:bg-green-900/30 rounded-lg p-4 text-center">
+                    <svg class="w-8 h-8 text-green-600 dark:text-green-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-sm font-medium text-green-800 dark:text-green-200">Tudo sob controle!</p>
+                    <p class="text-xs text-green-700 dark:text-green-300 mt-1">Nenhum ticket próximo ao vencimento</p>
+                </div>
+            <?php endif ?>
+        </div>
+    </div>
 </div>
 
 <!-- Performance por Agente -->
@@ -481,6 +615,55 @@ const chartCategoria = new ApexCharts(document.querySelector("#chartCategoria"),
 chartCategoria.render();
 
 console.log('📊 Relatórios carregados com gráficos!');
+
+// Quick Filters functionality
+function aplicarFiltroRapido(periodo) {
+    const form = document.getElementById('form-filtros');
+    const periodoInicio = form.querySelector('[name="periodo_inicio"]');
+    const periodoFim = form.querySelector('[name="periodo_fim"]');
+    const hoje = new Date();
+    const formatDate = (date) => date.toISOString().split('T')[0];
+
+    // Remove active class from all buttons
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20', 'text-indigo-700', 'dark:text-indigo-300');
+        btn.classList.add('border-transparent', 'bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+    });
+
+    // Add active class to clicked button
+    event.target.classList.remove('border-transparent', 'bg-gray-100', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+    event.target.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900/20', 'text-indigo-700', 'dark:text-indigo-300');
+
+    let inicio, fim = hoje;
+
+    switch(periodo) {
+        case 'hoje':
+            inicio = hoje;
+            break;
+        case 'ontem':
+            inicio = new Date(hoje);
+            inicio.setDate(hoje.getDate() - 1);
+            fim = new Date(inicio);
+            break;
+        case 'ultimos7':
+            inicio = new Date(hoje);
+            inicio.setDate(hoje.getDate() - 7);
+            break;
+        case 'ultimos30':
+            inicio = new Date(hoje);
+            inicio.setDate(hoje.getDate() - 30);
+            break;
+        case 'esteano':
+            inicio = new Date(hoje.getFullYear(), 0, 1);
+            break;
+    }
+
+    periodoInicio.value = formatDate(inicio);
+    periodoFim.value = formatDate(fim);
+
+    // Submit form
+    form.submit();
+}
 </script>
 
 <?= $this->endSection() ?>
