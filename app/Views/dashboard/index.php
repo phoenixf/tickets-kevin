@@ -52,7 +52,7 @@
         </div>
     </div>
 
-    <!-- Em Andamento -->
+    <!-- Em Progresso -->
     <div class="bg-white overflow-hidden shadow-md rounded-lg hover:shadow-lg transition-shadow">
         <div class="p-5">
             <div class="flex items-center">
@@ -62,8 +62,8 @@
                     </svg>
                 </div>
                 <div class="ml-5 w-0 flex-1">
-                    <dt class="text-sm font-medium text-gray-500 truncate">Em Andamento</dt>
-                    <dd class="text-3xl font-bold text-yellow-600"><?= $stats['em_andamento'] ?></dd>
+                    <dt class="text-sm font-medium text-gray-500 truncate">Em Progresso</dt>
+                    <dd class="text-3xl font-bold text-yellow-600"><?= $stats['em_progresso'] ?></dd>
                 </div>
             </div>
         </div>

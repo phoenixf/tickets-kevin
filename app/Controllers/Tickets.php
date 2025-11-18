@@ -180,12 +180,21 @@ class Tickets extends BaseController
                 ->with('error', 'Você não tem permissão para editar tickets');
         }
 
+        // Buscar agentes e admins para atribuição
+        $db = \Config\Database::connect();
+        $agentes = $db->table('usuarios')
+            ->whereIn('funcao', ['agente', 'admin'])
+            ->orderBy('nome', 'ASC')
+            ->get()
+            ->getResult();
+
         $data = [
             'title' => 'Editar Ticket #' . $ticket['id'],
             'user' => $user,
             'ticket' => $ticket,
             'categorias' => $this->categoryModel->getAtivas(),
             'prioridades' => $this->priorityModel->getOrdenadas(),
+            'agentes' => $agentes,
         ];
 
         return view('tickets/edit', $data);

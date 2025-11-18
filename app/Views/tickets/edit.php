@@ -31,13 +31,13 @@
                       required><?= old('descricao', $ticket['descricao']) ?></textarea>
         </div>
 
-        <!-- Categoria, Prioridade e Status -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <!-- Categoria, Prioridade, Status e Responsável -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <!-- Categoria -->
             <div>
                 <label for="categoria_id" class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
-                <select id="categoria_id" 
-                        name="categoria_id" 
+                <select id="categoria_id"
+                        name="categoria_id"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <option value="">Nenhuma</option>
                     <?php foreach ($categorias as $categoria) : ?>
@@ -51,9 +51,9 @@
             <!-- Prioridade -->
             <div>
                 <label for="prioridade_id" class="block text-sm font-medium text-gray-700 mb-2">Prioridade *</label>
-                <select id="prioridade_id" 
-                        name="prioridade_id" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                <select id="prioridade_id"
+                        name="prioridade_id"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         required>
                     <?php foreach ($prioridades as $prioridade) : ?>
                         <option value="<?= $prioridade['id'] ?>" <?= old('prioridade_id', $ticket['prioridade_id']) == $prioridade['id'] ? 'selected' : '' ?>>
@@ -66,15 +66,34 @@
             <!-- Status -->
             <div>
                 <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
-                <select id="status" 
-                        name="status" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                <select id="status"
+                        name="status"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         required>
                     <option value="novo" <?= old('status', $ticket['status']) == 'novo' ? 'selected' : '' ?>>Novo</option>
-                    <option value="em_andamento" <?= old('status', $ticket['status']) == 'em_andamento' ? 'selected' : '' ?>>Em Andamento</option>
-                    <option value="aguardando" <?= old('status', $ticket['status']) == 'aguardando' ? 'selected' : '' ?>>Aguardando</option>
+                    <option value="aberto" <?= old('status', $ticket['status']) == 'aberto' ? 'selected' : '' ?>>Aberto</option>
+                    <option value="em_progresso" <?= old('status', $ticket['status']) == 'em_progresso' ? 'selected' : '' ?>>Em Progresso</option>
+                    <option value="pendente" <?= old('status', $ticket['status']) == 'pendente' ? 'selected' : '' ?>>Pendente</option>
                     <option value="resolvido" <?= old('status', $ticket['status']) == 'resolvido' ? 'selected' : '' ?>>Resolvido</option>
                     <option value="fechado" <?= old('status', $ticket['status']) == 'fechado' ? 'selected' : '' ?>>Fechado</option>
+                </select>
+            </div>
+
+            <!-- Responsável (Transferir Ticket) -->
+            <div>
+                <label for="responsavel_id" class="block text-sm font-medium text-gray-700 mb-2">
+                    Atribuir para
+                    <span class="text-xs text-gray-500">(Agente/Admin)</span>
+                </label>
+                <select id="responsavel_id"
+                        name="responsavel_id"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="">Não atribuído</option>
+                    <?php foreach ($agentes as $agente) : ?>
+                        <option value="<?= $agente->id ?>" <?= old('responsavel_id', $ticket['responsavel_id']) == $agente->id ? 'selected' : '' ?>>
+                            <?= esc($agente->nome) ?> (<?= esc($agente->funcao) ?>)
+                        </option>
+                    <?php endforeach ?>
                 </select>
             </div>
         </div>

@@ -34,8 +34,9 @@ class Dashboard extends BaseController
         $stats = [
             'total' => 0,
             'novos' => 0,
-            'em_andamento' => 0,
-            'aguardando' => 0,
+            'abertos' => 0,
+            'em_progresso' => 0,
+            'pendentes' => 0,
             'resolvidos' => 0,
             'fechados' => 0,
         ];
@@ -44,8 +45,9 @@ class Dashboard extends BaseController
             // Estatísticas dos tickets do cliente
             $stats['total'] = $this->ticketModel->where('usuario_id', $user->id)->countAllResults(false);
             $stats['novos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'novo')->countAllResults(false);
-            $stats['em_andamento'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'em_andamento')->countAllResults(false);
-            $stats['aguardando'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'aguardando')->countAllResults(false);
+            $stats['abertos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'aberto')->countAllResults(false);
+            $stats['em_progresso'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'em_progresso')->countAllResults(false);
+            $stats['pendentes'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'pendente')->countAllResults(false);
             $stats['resolvidos'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'resolvido')->countAllResults(false);
             $stats['fechados'] = $this->ticketModel->where('usuario_id', $user->id)->where('status', 'fechado')->countAllResults(false);
 
@@ -55,8 +57,9 @@ class Dashboard extends BaseController
             // Estatísticas de todos os tickets (agentes veem tudo)
             $stats['total'] = $this->ticketModel->countAll(false);
             $stats['novos'] = $this->ticketModel->where('status', 'novo')->countAllResults(false);
-            $stats['em_andamento'] = $this->ticketModel->where('status', 'em_andamento')->countAllResults(false);
-            $stats['aguardando'] = $this->ticketModel->where('status', 'aguardando')->countAllResults(false);
+            $stats['abertos'] = $this->ticketModel->where('status', 'aberto')->countAllResults(false);
+            $stats['em_progresso'] = $this->ticketModel->where('status', 'em_progresso')->countAllResults(false);
+            $stats['pendentes'] = $this->ticketModel->where('status', 'pendente')->countAllResults(false);
             $stats['resolvidos'] = $this->ticketModel->where('status', 'resolvido')->countAllResults(false);
             $stats['fechados'] = $this->ticketModel->where('status', 'fechado')->countAllResults(false);
 
@@ -66,8 +69,9 @@ class Dashboard extends BaseController
             // Admin - estatísticas completas
             $stats['total'] = $this->ticketModel->countAll(false);
             $stats['novos'] = $this->ticketModel->where('status', 'novo')->countAllResults(false);
-            $stats['em_andamento'] = $this->ticketModel->where('status', 'em_andamento')->countAllResults(false);
-            $stats['aguardando'] = $this->ticketModel->where('status', 'aguardando')->countAllResults(false);
+            $stats['abertos'] = $this->ticketModel->where('status', 'aberto')->countAllResults(false);
+            $stats['em_progresso'] = $this->ticketModel->where('status', 'em_progresso')->countAllResults(false);
+            $stats['pendentes'] = $this->ticketModel->where('status', 'pendente')->countAllResults(false);
             $stats['resolvidos'] = $this->ticketModel->where('status', 'resolvido')->countAllResults(false);
             $stats['fechados'] = $this->ticketModel->where('status', 'fechado')->countAllResults(false);
 
