@@ -186,26 +186,301 @@
 
 </div>
 
-<!-- Placeholder para próximas seções -->
+<!-- Performance por Agente -->
+<?php if (!empty($performanceAgentes)) : ?>
 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6 transition-colors duration-200">
-    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">🚧 Em Desenvolvimento</h3>
-    <p class="text-gray-600 dark:text-gray-300">As próximas seções com gráficos ApexCharts serão implementadas em breve:</p>
-    <ul class="list-disc list-inside mt-2 text-gray-600 dark:text-gray-300">
-        <li>Performance por Agente (tabela + gráfico barras)</li>
-        <li>Tickets Criados vs Resolvidos (gráfico linha)</li>
-        <li>Distribuição por Status/Prioridade/Categoria (gráficos pizza/barras)</li>
-        <li>Análise Temporal (distribuição semanal, heatmap)</li>
-    </ul>
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">👥 Performance por Agente</h3>
+
+    <!-- Tabela -->
+    <div class="overflow-x-auto mb-6">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Agente</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Resolvidos</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pendentes</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Taxa Resolução</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tempo Médio</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reaberturas</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <?php foreach ($performanceAgentes as $agente) : ?>
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"><?= esc($agente['agente_nome']) ?></td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center text-gray-700 dark:text-gray-300"><?= $agente['total_atribuido'] ?></td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center text-green-600 dark:text-green-400 font-semibold"><?= $agente['resolvidos'] ?></td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center text-yellow-600 dark:text-yellow-400"><?= $agente['pendentes'] ?></td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center text-purple-600 dark:text-purple-400 font-semibold"><?= $agente['taxa_resolucao'] ?>%</td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center text-blue-600 dark:text-blue-400">
+                        <?php
+                        $horas = floor($agente['tempo_medio_minutos'] / 60);
+                        $minutos = $agente['tempo_medio_minutos'] % 60;
+                        echo $horas . 'h ' . $minutos . 'm';
+                        ?>
+                    </td>
+                    <td class="px-4 py-3 whitespace-nowrap text-sm text-center">
+                        <span class="text-gray-700 dark:text-gray-300"><?= $agente['total_reaberturas'] ?></span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">(<?= $agente['taxa_reabertura'] ?>%)</span>
+                    </td>
+                </tr>
+                <?php endforeach ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Gráfico de Barras -->
+    <div id="chartPerformanceAgentes"></div>
+</div>
+<?php endif ?>
+
+<!-- Tickets Criados vs Resolvidos -->
+<div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6 transition-colors duration-200">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">📈 Tickets Criados vs Resolvidos</h3>
+    <div id="chartTicketsPorPeriodo"></div>
+</div>
+
+<!-- Distribuições -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Status -->
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 transition-colors duration-200">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">📊 Por Status</h3>
+        <div id="chartStatus"></div>
+    </div>
+
+    <!-- Prioridade -->
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 transition-colors duration-200">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">⚡ Por Prioridade</h3>
+        <div id="chartPrioridade"></div>
+    </div>
+
+    <!-- Categoria -->
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 transition-colors duration-200">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">🏷️ Por Categoria</h3>
+        <div id="chartCategoria"></div>
+    </div>
 </div>
 
 <!-- ApexCharts CDN -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script>
-// Placeholder para scripts dos gráficos
-console.log('📊 Relatórios carregados!');
-console.log('KPIs:', <?= json_encode($kpis) ?>);
-console.log('Performance Agentes:', <?= json_encode($performanceAgentes) ?>);
+// Dados do backend
+const kpis = <?= json_encode($kpis) ?>;
+const performanceAgentes = <?= json_encode($performanceAgentes) ?>;
+const ticketsPorPeriodo = <?= json_encode($ticketsPorPeriodo) ?>;
+const distribuicaoStatus = <?= json_encode($distribuicaoStatus) ?>;
+const distribuicaoPrioridade = <?= json_encode($distribuicaoPrioridade) ?>;
+const distribuicaoCategoria = <?= json_encode($distribuicaoCategoria) ?>;
+
+// Verificar dark mode
+const isDark = document.documentElement.classList.contains('dark');
+const textColor = isDark ? '#e5e7eb' : '#374151';
+const gridColor = isDark ? '#374151' : '#e5e7eb';
+
+// Cores para gráficos
+const statusColors = {
+    'novo': '#3b82f6',
+    'em_andamento': '#f59e0b',
+    'aguardando_resposta': '#8b5cf6',
+    'resolvido': '#10b981',
+    'fechado': '#6b7280'
+};
+
+// 1. Gráfico Performance por Agente (Barras Horizontais)
+if (performanceAgentes.length > 0) {
+    const optionsPerformance = {
+        series: [{
+            name: 'Resolvidos',
+            data: performanceAgentes.map(a => a.resolvidos)
+        }, {
+            name: 'Pendentes',
+            data: performanceAgentes.map(a => a.pendentes)
+        }],
+        chart: {
+            type: 'bar',
+            height: 300,
+            stacked: true,
+            background: 'transparent',
+            toolbar: { show: true }
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                borderRadius: 4
+            }
+        },
+        colors: ['#10b981', '#f59e0b'],
+        xaxis: {
+            categories: performanceAgentes.map(a => a.agente_nome),
+            labels: { style: { colors: textColor } }
+        },
+        yaxis: {
+            labels: { style: { colors: textColor } }
+        },
+        legend: {
+            position: 'top',
+            labels: { colors: textColor }
+        },
+        grid: {
+            borderColor: gridColor
+        },
+        theme: {
+            mode: isDark ? 'dark' : 'light'
+        }
+    };
+
+    const chartPerformance = new ApexCharts(document.querySelector("#chartPerformanceAgentes"), optionsPerformance);
+    chartPerformance.render();
+}
+
+// 2. Gráfico Tickets Criados vs Resolvidos (Linha)
+const optionsTickets = {
+    series: [{
+        name: 'Criados',
+        data: ticketsPorPeriodo.map(t => t.criados)
+    }, {
+        name: 'Resolvidos',
+        data: ticketsPorPeriodo.map(t => t.resolvidos)
+    }],
+    chart: {
+        type: 'line',
+        height: 350,
+        background: 'transparent',
+        toolbar: { show: true },
+        zoom: { enabled: true }
+    },
+    colors: ['#3b82f6', '#10b981'],
+    stroke: {
+        width: 3,
+        curve: 'smooth'
+    },
+    markers: {
+        size: 4
+    },
+    xaxis: {
+        categories: ticketsPorPeriodo.map(t => t.data),
+        labels: {
+            style: { colors: textColor },
+            rotate: -45
+        }
+    },
+    yaxis: {
+        labels: { style: { colors: textColor } }
+    },
+    legend: {
+        position: 'top',
+        labels: { colors: textColor }
+    },
+    grid: {
+        borderColor: gridColor
+    },
+    theme: {
+        mode: isDark ? 'dark' : 'light'
+    }
+};
+
+const chartTickets = new ApexCharts(document.querySelector("#chartTicketsPorPeriodo"), optionsTickets);
+chartTickets.render();
+
+// 3. Gráfico Status (Pizza)
+const optionsStatus = {
+    series: distribuicaoStatus.map(s => s.total),
+    chart: {
+        type: 'donut',
+        height: 280,
+        background: 'transparent'
+    },
+    labels: distribuicaoStatus.map(s => {
+        const labels = {
+            'novo': 'Novo',
+            'em_andamento': 'Em Andamento',
+            'aguardando_resposta': 'Aguardando',
+            'resolvido': 'Resolvido',
+            'fechado': 'Fechado'
+        };
+        return labels[s.status] || s.status;
+    }),
+    colors: distribuicaoStatus.map(s => statusColors[s.status] || '#6b7280'),
+    legend: {
+        position: 'bottom',
+        labels: { colors: textColor }
+    },
+    plotOptions: {
+        pie: {
+            donut: {
+                size: '60%'
+            }
+        }
+    },
+    theme: {
+        mode: isDark ? 'dark' : 'light'
+    }
+};
+
+const chartStatus = new ApexCharts(document.querySelector("#chartStatus"), optionsStatus);
+chartStatus.render();
+
+// 4. Gráfico Prioridade (Pizza)
+const optionsPrioridade = {
+    series: distribuicaoPrioridade.map(p => p.total),
+    chart: {
+        type: 'donut',
+        height: 280,
+        background: 'transparent'
+    },
+    labels: distribuicaoPrioridade.map(p => p.nome),
+    colors: distribuicaoPrioridade.map(p => p.cor),
+    legend: {
+        position: 'bottom',
+        labels: { colors: textColor }
+    },
+    plotOptions: {
+        pie: {
+            donut: {
+                size: '60%'
+            }
+        }
+    },
+    theme: {
+        mode: isDark ? 'dark' : 'light'
+    }
+};
+
+const chartPrioridade = new ApexCharts(document.querySelector("#chartPrioridade"), optionsPrioridade);
+chartPrioridade.render();
+
+// 5. Gráfico Categoria (Pizza)
+const optionsCategoria = {
+    series: distribuicaoCategoria.map(c => c.total),
+    chart: {
+        type: 'donut',
+        height: 280,
+        background: 'transparent'
+    },
+    labels: distribuicaoCategoria.map(c => c.nome),
+    colors: distribuicaoCategoria.map(c => c.cor),
+    legend: {
+        position: 'bottom',
+        labels: { colors: textColor }
+    },
+    plotOptions: {
+        pie: {
+            donut: {
+                size: '60%'
+            }
+        }
+    },
+    theme: {
+        mode: isDark ? 'dark' : 'light'
+    }
+};
+
+const chartCategoria = new ApexCharts(document.querySelector("#chartCategoria"), optionsCategoria);
+chartCategoria.render();
+
+console.log('📊 Relatórios carregados com gráficos!');
 </script>
 
 <?= $this->endSection() ?>
