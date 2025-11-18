@@ -94,6 +94,19 @@ phpunit
 vendor/
 
 #-------------------------
+# Node / NPM
+#-------------------------
+node_modules/
+package-lock.json
+
+#-------------------------
+# Playwright
+#-------------------------
+playwright-report/
+test-results/
+.playwright/
+
+#-------------------------
 # IDE / Development Files
 #-------------------------
 
