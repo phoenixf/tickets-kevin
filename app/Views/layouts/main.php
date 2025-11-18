@@ -25,6 +25,34 @@
         })();
     </script>
 
+    <!-- Sidebar State Script - Must be in head to prevent FOUC -->
+    <script>
+        // Apply sidebar state immediately before page renders
+        (function() {
+            const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+            if (sidebarCollapsed) {
+                // Add CSS classes directly to documentElement to apply on load
+                document.documentElement.setAttribute('data-sidebar-collapsed', 'true');
+            }
+        })();
+    </script>
+
+    <style>
+        /* Apply sidebar state instantly without JavaScript animation */
+        html[data-sidebar-collapsed="true"] #sidebar {
+            width: 4rem !important;
+        }
+        html[data-sidebar-collapsed="true"] #main-content {
+            margin-left: 4rem !important;
+        }
+        html[data-sidebar-collapsed="true"] .sidebar-text {
+            display: none !important;
+        }
+        html[data-sidebar-collapsed="true"] #sidebar-toggle-icon {
+            transform: rotate(180deg) !important;
+        }
+    </style>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -112,27 +140,44 @@
     <div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
 
         <!-- Sidebar -->
-        <aside class="fixed top-0 left-0 z-20 flex flex-col flex-shrink-0 w-64 h-full pt-16 font-normal duration-75 transition-width" aria-label="Sidebar">
+        <aside id="sidebar" class="fixed top-0 left-0 z-20 flex flex-col flex-shrink-0 w-64 h-full pt-16 font-normal transition-all duration-300 ease-in-out" aria-label="Sidebar">
             <div class="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pt-0 transition-colors duration-200">
+                <!-- Toggle Button -->
+                <button id="sidebar-toggle" class="absolute -right-3 top-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-1.5 shadow-lg transition-all duration-200 z-30" aria-label="Toggle sidebar">
+                    <svg id="sidebar-toggle-icon" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
                 <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                     <div class="flex-1 px-3 space-y-1 bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 transition-colors duration-200">
                         <ul class="space-y-2 pb-2">
                             <li>
-                                <a href="/dashboard" class="text-base text-gray-900 dark:text-gray-100 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-colors duration-200">
-                                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition duration-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <a href="/dashboard" class="text-base text-gray-900 dark:text-gray-100 font-normal rounded-lg flex items-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 group transition-colors duration-200" title="Dashboard">
+                                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition duration-75 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                                     </svg>
-                                    <span class="ml-3">Dashboard</span>
+                                    <span class="ml-3 sidebar-text whitespace-nowrap">Dashboard</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="/tickets" class="text-base text-gray-900 dark:text-gray-100 font-normal rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center p-2 group transition-colors duration-200">
+                                <a href="/tickets" class="text-base text-gray-900 dark:text-gray-100 font-normal rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center p-2 group transition-colors duration-200" title="Tickets">
                                     <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 flex-shrink-0 group-hover:text-gray-900 dark:group-hover:text-white transition duration-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
                                     </svg>
-                                    <span class="ml-3 flex-1 whitespace-nowrap">Tickets</span>
+                                    <span class="ml-3 sidebar-text whitespace-nowrap">Tickets</span>
                                 </a>
                             </li>
+                            <?php if ($user->funcao !== 'cliente') : ?>
+                            <li>
+                                <a href="/relatorios" class="text-base text-gray-900 dark:text-gray-100 font-normal rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center p-2 group transition-colors duration-200" title="Relatórios">
+                                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 flex-shrink-0 group-hover:text-gray-900 dark:group-hover:text-white transition duration-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                    </svg>
+                                    <span class="ml-3 sidebar-text whitespace-nowrap">Relatórios</span>
+                                </a>
+                            </li>
+                            <?php endif ?>
                         </ul>
                     </div>
                 </div>
@@ -140,7 +185,7 @@
         </aside>
 
         <!-- Main Content -->
-        <div id="main-content" class="h-full w-full bg-gray-50 dark:bg-gray-900 relative overflow-y-auto lg:ml-64 transition-colors duration-200">
+        <div id="main-content" class="h-full w-full bg-gray-50 dark:bg-gray-900 relative overflow-y-auto transition-all duration-300 ease-in-out ml-64">
             <main>
                 <div class="pt-6 px-4">
                     <!-- Mensagens Flash -->
@@ -216,6 +261,72 @@
             // Update icon and text
             updateIcon();
         });
+    </script>
+
+    <!-- Sidebar Toggle Script -->
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarToggleIcon = document.getElementById('sidebar-toggle-icon');
+        const mainContent = document.getElementById('main-content');
+        const sidebarTexts = document.querySelectorAll('.sidebar-text');
+
+        // Check saved state
+        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+        // Apply saved state on load (already done in head, just sync classes)
+        if (sidebarCollapsed) {
+            sidebar.classList.remove('w-64');
+            sidebar.classList.add('w-16');
+            mainContent.classList.remove('ml-64');
+            mainContent.classList.add('ml-16');
+            // Text and icon already hidden by CSS in head
+        }
+
+        // Toggle sidebar
+        sidebarToggle.addEventListener('click', function() {
+            if (sidebar.classList.contains('w-64')) {
+                collapseSidebar();
+                localStorage.setItem('sidebarCollapsed', 'true');
+                document.documentElement.setAttribute('data-sidebar-collapsed', 'true');
+            } else {
+                expandSidebar();
+                localStorage.setItem('sidebarCollapsed', 'false');
+                document.documentElement.removeAttribute('data-sidebar-collapsed');
+            }
+        });
+
+        function collapseSidebar() {
+            sidebar.classList.remove('w-64');
+            sidebar.classList.add('w-16');
+            mainContent.classList.remove('ml-64');
+            mainContent.classList.add('ml-16');
+            sidebarToggleIcon.style.transform = 'rotate(180deg)';
+
+            // Hide text labels
+            sidebarTexts.forEach(text => {
+                text.style.opacity = '0';
+                setTimeout(() => {
+                    text.classList.add('hidden');
+                }, 150);
+            });
+        }
+
+        function expandSidebar() {
+            sidebar.classList.remove('w-16');
+            sidebar.classList.add('w-64');
+            mainContent.classList.remove('ml-16');
+            mainContent.classList.add('ml-64');
+            sidebarToggleIcon.style.transform = 'rotate(0deg)';
+
+            // Show text labels
+            sidebarTexts.forEach(text => {
+                text.classList.remove('hidden');
+                setTimeout(() => {
+                    text.style.opacity = '1';
+                }, 50);
+            });
+        }
     </script>
 </body>
 </html>
